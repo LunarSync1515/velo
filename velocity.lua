@@ -148,6 +148,68 @@ end)
   
   Cheat.Globals.LastManip = tick()
   Cheat.Globals.LastAutoReload = tick()
+
+			meleeSpeeds = {
+				["Stone Hatchet"] = 1.65,
+				["Iron Shard Hatchet"] = 1.3,
+				["Steel Axe"] = 1.3,
+				["Chainsaw"] = 1.6,
+				["Stone Pickaxe"] = 1.65,
+				["Iron Shard Pickaxe"] = 1.3,
+				["Bone Tool"] = 1.3,
+				["Candy Cane"] = 1.3,
+				["Carrot Blade"] = 1.3,
+				["Steel Pickaxe"] = 1.3,
+				["Mining Drill"] = 1.6,
+				["Wooden Spear"] = 1.3,
+				["Stone Spear"] = 1.3,
+				["Halloween Scythe"] = 1.3,
+				["Boulder"] = 1.34,
+				["Steel Shovel"] = 1.3,
+				["Salvaged Shovel"] = 1.3,
+				["ez shovel"] = 1.3,
+				["Saw Bat"] = 1.3,
+				["Machete"] = 1.3,
+				["Hammer"] = 1.3,
+			}
+
+			function applyMeleeCooldown()
+				Info = Cheat.Globals.ToolInfo
+				InfoCopy = Cheat.Globals.ToolInfoCopy
+				if not Info or not InfoCopy then return end
+				enabled = flags.MeleeCooldownReduction
+				for name, data in pairs(Info) do
+					if data.Weapon and data.Weapon.Cooldown ~= nil then
+						copy = InfoCopy[name]
+						if copy and copy.Weapon then
+							if enabled and meleeSpeeds[name] then
+								speed = meleeSpeeds[name]
+								data.Weapon.Cooldown = copy.Weapon.Cooldown / speed
+								if copy.Weapon.SwingAnimSpeed then
+									data.Weapon.SwingAnimSpeed = copy.Weapon.SwingAnimSpeed * speed
+								end
+							else
+								data.Weapon.Cooldown = copy.Weapon.Cooldown
+								if copy.Weapon.SwingAnimSpeed then
+									data.Weapon.SwingAnimSpeed = copy.Weapon.SwingAnimSpeed
+								end
+							end
+						end
+					end
+				end
+			end
+
+			PlayerSection:Toggle({
+				Name = "Melee Cooldown Reduction",
+				Flag = "MeleeCooldownReduction",
+				Callback = function()
+					applyMeleeCooldown()
+				end
+			})
+		end
+
+		end
+
   local hitsounds
   --// hitsounds
   do
@@ -762,10 +824,12 @@ do
                   Name = "Bunnyhop",
                   Flag = "Bunnyhop"
               });
+			
           end
           
-          do --// Exploits
+do --// Exploits
               local ExploitsSection = MiscPage:Section({Name = "Exploits", Side = 2})
+              
               ExploitsSection:Toggle({
                   Name = "No Bob",
                   Flag = "NoBob"
@@ -806,6 +870,19 @@ do
                       end
                   end;
               });
+
+              -- =================================================================
+              -- MELEE COOLDOWN TOGGLE ADDED HERE
+              -- =================================================================
+              ExploitsSection:Toggle({
+                  Name = "Melee Cooldown Reduction",
+                  Flag = "MeleeCooldownReduction",
+                  Callback = function()
+                      -- Ensure 'applyMeleeCooldown' is defined elsewhere in your script
+                      applyMeleeCooldown() 
+                  end
+              })
+              -- =================================================================
           end
       end
   end
