@@ -1733,47 +1733,54 @@ do
     local lastUpdateTime = 0
     local lastHideTime = 0
     local debounceTime = 0.15
-    local gracePeriod = 0.3
+    local gracePeriod = 0.3 -- Stay visible for 0.3s after target loss
     local previousArmorImages = {}
 
+    -- Build GunTable once
     for _, gun in next, ItemsModule do
         if typeof(gun.Image) == 'table' then
             GunTable[gun.Name] = gun.Image
-            if not gun.Image.Default then
-                GunTable[gun.Name].Default = ''
-            end
         else
-            GunTable[gun.Name] = { Default = gun.Image }
+            GunTable[gun.Name] = {['Default'] = gun.Image}
         end
     end
 
+    -- Safe armor extractor
     local GetArmor = LPH_NO_VIRTUALIZE(function(Character)
         local final = {}
         local names = {}
         if not Character or type(Character) == 'string' then return {} end
 
         for _, child in Character:GetChildren() do
-            local armorNumber, skinName = child.Name:match('Armor_(%d+)%/?(.*)')
+            local armorNumber, skinName = child.Name:match('Armor_(%d+)/(.*)')
             if armorNumber then
                 local key = tonumber(armorNumber)
-                local item = ItemsModule[key]
-                if item and item.Type == 'Armor' and not table.find(names, item.Name) then
-                    skinName = skinName ~= '' and skinName or 'Default'
-                    local image = type(item.Image) == 'table' and (item.Image[skinName] or item.Image.Default) or item.Image
-                    local id = tonumber(string.match(image or '', '%d+')) or ''
+                if key then
+                    local item = ItemsModule[key]
+                    if item and item.Type == 'Armor' and not table.find(names, item.Name) then
+                        local image = ''
+                        if type(item.Image) == 'table' then
+                            if skinName and item.Image[skinName] then
+                                image = item.Image[skinName]
+                            elseif item.Image.Default then
+                                image = item.Image.Default
+                            end
+                        elseif type(item.Image) == 'string' then
+                            image = item.Image
+                        end
 
-                    table.insert(names, item.Name)
-                    table.insert(final, {
-                        Skin = skinName,
-                        Name = item.Name,
-                        Type = item.ArmorType,
-                        Image = id
-                    })
+                        local id = string.match(image or '', '%d+')
+                        table.insert(names, item.Name)
+                        table.insert(final, {
+                            ['Skin'] = skinName,
+                            ['Name'] = item.Name,
+                            ['Type'] = item.ArmorType,
+                            ['Image'] = id
+                        })
+                    end
                 end
             end
         end
-
-        table.sort(final, function(a,b) return a.Name < b.Name end)
         return final
     end)
 
@@ -1785,6 +1792,7 @@ do
 
         local character = Targeting.TargetCharacter
 
+        -- No target handling with Grace Period
         if not character or character.Name:lower():find("soldier") then
             lastHideTime = lastHideTime == 0 and now or lastHideTime
             if now - lastHideTime > gracePeriod then
@@ -1796,9 +1804,10 @@ do
             return
         else
             ArmorViewer:SetVisibility(flags.ArmorBarEnabled)
-            lastHideTime = 0
+            lastHideTime = 0 -- Reset visibility timer
         end
 
+        -- Handle target switches cleanly
         if character ~= lastTarget then
             lastTarget = character
             lastArmorHash = ''
@@ -1826,23 +1835,16 @@ do
         ArmorViewer:SetTitle(`${character.Name}'s inventory`)
 
         for _, armor in ipairs(armorData) do
-            local key = armor.Name .. "_" .. (armor.Skin or 'Default')
-            if not armorImageCache[key] then
-                if armor.Image and tonumber(armor.Image) then
-                    armorImageCache[key] = 'rbxassetid://' .. tostring(armor.Image)
-                elseif armor.Skin and GunTable[armor.Name] and GunTable[armor.Name][armor.Skin] then
-                    armorImageCache[key] = GunTable[armor.Name][armor.Skin]
-                elseif GunTable[armor.Name] and GunTable[armor.Name]['Default'] then
-                    armorImageCache[key] = GunTable[armor.Name]['Default']
-                else
-                    armorImageCache[key] = ''
-                end
+            local imageUrl = ''
+            if armor.Image and tonumber(armor.Image) then
+                imageUrl = 'rbxassetid://' .. tostring(armor.Image)
+            elseif armor.Skin and GunTable[armor.Name] and GunTable[armor.Name][armor.Skin] then
+                imageUrl = GunTable[armor.Name][armor.Skin]
+            elseif GunTable[armor.Name] and GunTable[armor.Name]['Default'] then
+                imageUrl = GunTable[armor.Name]['Default']
             end
 
-            if previousArmorImages[key] ~= armorImageCache[key] then
-                ArmorViewer:Add(armor.Name, armorImageCache[key])
-                previousArmorImages[key] = armorImageCache[key]
-            end
+            ArmorViewer:Add(armor.Name, imageUrl)
         end
     end)
 end
