@@ -3109,8 +3109,6 @@ Library.ArmorViewer = function(self)
     }
 
     local Items = {}
-    local Layout
-
     local MinWidth = 240
     local MaxWidth = 9999
     local BarHeight = 140
@@ -3128,7 +3126,7 @@ Library.ArmorViewer = function(self)
 
     local function CountItems()
         local n = 0
-        for _, c in ipairs(Items["RealHolder"].Instance:GetChildren()) do
+        for _, c in ipairs(Items["RealHolder"] and Items["RealHolder"]:GetChildren() or {}) do
             if c:IsA("Frame") or c:IsA("CanvasGroup") then
                 n += 1
             end
@@ -3137,9 +3135,7 @@ Library.ArmorViewer = function(self)
     end
 
     local function UpdateBarSize()
-        if not Items["ArmorViewer"] then
-            return
-        end
+        if not Items["ArmorViewer"] then return end
 
         local n = CountItems()
         local contentW
@@ -3153,15 +3149,15 @@ Library.ArmorViewer = function(self)
         local outerW = contentW + 24
         local w = Clamp(outerW, MinWidth, MaxWidth)
 
-        Items["ArmorViewer"].Instance.Size = UDim2.new(0, w, 0, BarHeight)
-        Items["Holder"].Instance.Size = UDim2.new(1, -24, 1, -(HeaderH + 12))
-        Items["RealHolder"].Instance.Size = UDim2.new(1, 0, 1, 0)
-        Items["RealHolder"].Instance.CanvasSize = UDim2.new(0, math.max(0, contentW), 0, 0)
+        Items["ArmorViewer"].Size = UDim2.new(0, w, 0, BarHeight)
+        Items["Holder"].Size = UDim2.new(1, -24, 1, -(HeaderH + 12))
+        Items["RealHolder"].Size = UDim2.new(1, 0, 1, 0)
+        Items["RealHolder"].CanvasSize = UDim2.new(0, math.max(0, contentW), 0, 0)
     end
 
     do
-        -- Root UI Main Container Frame
-        Items["ArmorViewer"] = Instances:Create("Frame", {
+        -- Root UI Main Container
+        local MainFrame = Instances:Create("Frame", {
             Parent = Library.Holder.Instance,
             Name = "\0",
             Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -3170,161 +3166,119 @@ Library.ArmorViewer = function(self)
             BorderSizePixel = 0,
             ZIndex = 8,
             BackgroundTransparency = 1,
-            BackgroundColor3 = Color3.fromRGB(24, 28, 36),
             AnchorPoint = Vector2.new(0.5, 0.5)
         })
+        MainFrame:MakeDraggable()
+        Items["ArmorViewer"] = MainFrame.Instance
 
-        Items["ArmorViewer"]:MakeDraggable()
-
-        -- FIXED: Background Text Frame explicitly bound to layout tracking
-        local TitleBoxObj = Instance.new("Frame")
-        TitleBoxObj.Name = "TotalEnforcedTitleBox"
-        TitleBoxObj.Position = UDim2.new(0.5, 0, 0, 4)
-        TitleBoxObj.AnchorPoint = Vector2.new(0.5, 0) -- Locks Title to absolute center position
-        TitleBoxObj.Size = UDim2.new(0, 140, 0, 26)
-        TitleBoxObj.AutomaticSize = Enum.AutomaticSize.X
-        TitleBoxObj.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
-        TitleBoxObj.BackgroundTransparency = 0.4
-        TitleBoxObj.BorderSizePixel = 0
-        TitleBoxObj.ZIndex = 12
-        TitleBoxObj.Parent = Items["ArmorViewer"].Instance
+        -- FIX: Native Roblox text box that completely ignores library themes
+        local TitleBox = Instance.new("Frame")
+        TitleBox.Name = "StaticTitlePlate"
+        TitleBox.Position = UDim2.new(0.5, 0, 0, 4)
+        TitleBox.AnchorPoint = Vector2.new(0.5, 0)
+        TitleBox.Size = UDim2.new(0, 130, 0, 24)
+        TitleBox.AutomaticSize = Enum.AutomaticSize.X
+        TitleBox.BackgroundColor3 = Color3.fromRGB(20, 24, 30)
+        TitleBox.BackgroundTransparency = 0.35
+        TitleBox.BorderSizePixel = 0
+        TitleBox.ZIndex = 12
+        TitleBox.Parent = MainFrame.Instance
 
         local TitleCorner = Instance.new("UICorner")
         TitleCorner.CornerRadius = UDim.new(0, 6)
-        TitleCorner.Parent = TitleBoxObj
+        TitleCorner.Parent = TitleBox
 
         local TitlePadding = Instance.new("UIPadding")
-        TitlePadding.PaddingLeft = UDim.new(0, 14)
-        TitlePadding.PaddingRight = UDim.new(0, 14)
-        TitlePadding.Parent = TitleBoxObj
+        TitlePadding.PaddingLeft = UDim.new(0, 12)
+        TitlePadding.PaddingRight = UDim.new(0, 12)
+        TitlePadding.Parent = TitleBox
 
-        -- Bind the custom background box to the framework list layout dictionary wrapper
-        Items["TitleBox"] = { Instance = TitleBoxObj }
+        local TitleLabel = Instance.new("TextLabel")
+        TitleLabel.Name = "EnforcedTitleText"
+        TitleLabel.Font = Enum.Font.SourceSansBold
+        TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TitleLabel.Text = "Armor"
+        TitleLabel.Size = UDim2.new(1, 0, 1, 0)
+        TitleLabel.BackgroundTransparency = 1
+        TitleLabel.TextXAlignment = Enum.TextXAlignment.Center
+        TitleLabel.TextSize = 14
+        TitleLabel.ZIndex = 14
+        TitleLabel.Parent = TitleBox
+        Items["RawTitleLabel"] = TitleLabel
 
-        -- Main Title string element
-        Items["Title"] = Instances:Create("TextLabel", {
-            Parent = TitleBoxObj,
-            Name = "\0",
-            FontFace = Library.Font,
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-            BorderColor3 = Color3.fromRGB(0, 0, 0),
-            Text = "Armor",
-            Size = UDim2.new(1, 0, 1, 0),
-            Position = UDim2.new(0, 0, 0, 0),
-            BackgroundTransparency = 1,
-            TextTransparency = 0,
-            Visible = true,
-            TextXAlignment = Enum.TextXAlignment.Center,
-            BorderSizePixel = 0,
-            ZIndex = 14,
-            TextSize = 13,
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        }) Items["Title"]:AddToTheme({TextColor3 = "Text"})
+        -- Holder Content Setup
+        local Holder = Instance.new("Frame")
+        Holder.Name = "Holder"
+        Holder.BackgroundTransparency = 1
+        Holder.Position = UDim2.new(0, 12, 0, HeaderH)
+        Holder.Size = UDim2.new(1, -24, 1, -(HeaderH + 12))
+        Holder.BorderSizePixel = 0
+        Holder.ZIndex = 8
+        Holder.Parent = MainFrame.Instance
+        Items["Holder"] = Holder
 
-        Items["Holder"] = Instances:Create("Frame", {
-            Parent = Items["ArmorViewer"].Instance,
-            Name = "\0",
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 12, 0, HeaderH),
-            BorderColor3 = Color3.fromRGB(0, 0, 0),
-            Size = UDim2.new(1, -24, 1, -(HeaderH + 12)),
-            BorderSizePixel = 0,
-            ZIndex = 8,
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        })
+        local RealHolder = Instance.new("ScrollingFrame")
+        RealHolder.Name = "RealHolder"
+        RealHolder.Active = true
+        RealHolder.BorderSizePixel = 0
+        RealHolder.CanvasSize = UDim2.new(0, 0, 0, 0)
+        RealHolder.ScrollBarThickness = 0
+        RealHolder.Size = UDim2.new(1, 0, 1, 0)
+        RealHolder.BackgroundTransparency = 1
+        RealHolder.ZIndex = 8
+        RealHolder.ScrollingDirection = Enum.ScrollingDirection.X
+        RealHolder.Parent = Holder
+        Items["RealHolder"] = RealHolder
 
-        Items["RealHolder"] = Instances:Create("ScrollingFrame", {
-            Parent = Items["Holder"].Instance,
-            Name = "\0",
-            Active = true,
-            AutomaticCanvasSize = Enum.AutomaticSize.None,
-            BorderSizePixel = 0,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            ScrollBarImageColor3 = Color3.fromRGB(46, 52, 61),
-            MidImage = "rbxassetid://93024691806056",
-            BorderColor3 = Color3.fromRGB(0, 0, 0),
-            ScrollBarThickness = 0,
-            Size = UDim2.new(1, 0, 1, 0),
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 0, 0, 0),
-            ZIndex = 8,
-            BottomImage = "rbxassetid://93024691806056",
-            TopImage = "rbxassetid://93024691806056",
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-            ScrollingDirection = Enum.ScrollingDirection.X
-        }) Items["RealHolder"]:AddToTheme({ScrollBarImageColor3 = "Border"})
-
-        -- Grid Layout Engine layout structure
         local Grid = Instance.new("UIGridLayout")
         Grid.SortOrder = Enum.SortOrder.LayoutOrder
         Grid.CellSize = UDim2.new(0, ItemSize, 0, ItemSize)
         Grid.CellPadding = UDim2.new(0, Gap, 0, 0)
         Grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
         Grid.VerticalAlignment = Enum.VerticalAlignment.Center
-        Grid.Parent = Items["RealHolder"].Instance
+        Grid.Parent = RealHolder
 
         local Pad = Instance.new("UIPadding")
         Pad.PaddingTop = UDim.new(0, PadT)
         Pad.PaddingBottom = UDim.new(0, PadB)
         Pad.PaddingRight = UDim.new(0, PadR)
         Pad.PaddingLeft = UDim.new(0, PadL)
-        Pad.Parent = Items["RealHolder"].Instance
+        Pad.Parent = RealHolder
 
-        Items["RealHolder"].Instance.ChildAdded:Connect(function()
-            UpdateBarSize()
-        end)
-
-        Items["RealHolder"].Instance.ChildRemoved:Connect(function()
-            UpdateBarSize()
-        end)
-
+        RealHolder.ChildAdded:Connect(UpdateBarSize)
+        RealHolder.ChildRemoved:Connect(UpdateBarSize)
         UpdateBarSize()
     end
 
     function Viewer:Add(Name, Icon)
         local NewItemTable = {}
 
-        -- FIXED: Replaced clean frames with CanvasGroup layers to bypass clipping restrictions
-        local ArmorBackBox = Instance.new("CanvasGroup")
+        -- FIX: Box background frame that cannot be modified by the library theme list
+        local ArmorBackBox = Instance.new("Frame")
         ArmorBackBox.Name = "ForcedNativeArmorBox"
         ArmorBackBox.BackgroundColor3 = Color3.fromRGB(20, 24, 32)
         ArmorBackBox.BackgroundTransparency = 0.45
         ArmorBackBox.BorderSizePixel = 0
         ArmorBackBox.ZIndex = 8
-        ArmorBackBox.Parent = Items["RealHolder"].Instance
+        ArmorBackBox.Parent = Items["RealHolder"]
 
         local BoxCorner = Instance.new("UICorner")
         BoxCorner.CornerRadius = UDim.new(0, 8)
         BoxCorner.Parent = ArmorBackBox
 
-        local NewItem = Instances:Create("Frame", {
-            Parent = ArmorBackBox,
-            Name = "\0",
-            BackgroundTransparency = 1,
-            BorderColor3 = Color3.fromRGB(0, 0, 0),
-            ZIndex = 9,
-            Size = UDim2.new(1, 0, 1, 0),
-            BorderSizePixel = 0,
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        })
-
-        Instances:Create("ImageLabel", {
-            Parent = NewItem.Instance,
-            Name = "\0",
-            BorderColor3 = Color3.fromRGB(0, 0, 0),
-            AnchorPoint = Vector2.new(0.5, 0.5),
-            ZIndex = 11,
-            Image = Icon,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0.5, 0, 0.5, 0),
-            Size = UDim2.new(0, 58, 0, 58),
-            BorderSizePixel = 0,
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        })
+        local ImgLabel = Instance.new("ImageLabel")
+        ImgLabel.Name = "ArmorIcon"
+        ImgLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+        ImgLabel.ZIndex = 11
+        ImgLabel.Image = Icon
+        ImgLabel.BackgroundTransparency = 1
+        ImgLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+        ImgLabel.Size = UDim2.new(0, 58, 0, 58)
+        ImgLabel.BorderSizePixel = 0
+        ImgLabel.Parent = ArmorBackBox
 
         function NewItemTable:Remove()
             ArmorBackBox:Destroy()
-            NewItem:Clean()
             Viewer.Items[Name] = nil
             UpdateBarSize()
         end
@@ -3335,22 +3289,21 @@ Library.ArmorViewer = function(self)
     end
 
     function Viewer:ClearAllItems()
-        for _, Value in Viewer.Items do
-            if not Value or not Value.Remove then
-                continue
+        for k, Value in pairs(Viewer.Items) do
+            if Value and Value.Remove then
+                Value:Remove()
             end
-            Value:Remove()
         end
         UpdateBarSize()
     end
 
     function Viewer:SetVisibility(Bool)
-        Items["ArmorViewer"].Instance.Visible = Bool
+        if Items["ArmorViewer"] then Items["ArmorViewer"].Visible = Bool end
     end
 
     function Viewer:SetTitle(Name)
-        if Items["Title"] and Items["Title"].Instance then
-            Items["Title"].Instance.Text = tostring(Name or "")
+        if Items["RawTitleLabel"] then
+            Items["RawTitleLabel"].Text = tostring(Name or "")
         end
     end
 
@@ -3359,48 +3312,19 @@ Library.ArmorViewer = function(self)
     end
 
     function Viewer:GetPosition()
-        local p = Items["ArmorViewer"].Instance.Position
-
-        return {
-            XScale = p.X.Scale,
-            XOffset = p.X.Offset,
-            YScale = p.Y.Scale,
-            YOffset = p.Y.Offset
-        }
+        local p = Items["ArmorViewer"] and Items["ArmorViewer"].Position or UDim2.new()
+        return { XScale = p.X.Scale, XOffset = p.X.Offset, YScale = p.Y.Scale, YOffset = p.Y.Offset }
     end
 
     function Viewer:SetPosition(Position)
-        if not Position then
-            return
-        end
-
+        if not Items["ArmorViewer"] or not Position then return end
         if typeof(Position) == "UDim2" then
-            Items["ArmorViewer"].Instance.Position = Position
-            return
+            Items["ArmorViewer"].Position = Position
+        else
+            Items["ArmorViewer"].Position = UDim2.new(Position.XScale or 0, Position.XOffset or 0, Position.YScale or 0, Position.YOffset or 0)
         end
-
-        Items["ArmorViewer"].Instance.Position = UDim2.new(
-            Position.XScale or 0,
-            Position.XOffset or 0,
-            Position.YScale or 0,
-            Position.YOffset or 0
-        )
     end
 
-    function Viewer:SetSizeLimits(Min, Max)
-        MinWidth = Min or MinWidth
-        MaxWidth = Max or MaxWidth
-        UpdateBarSize()
-    end
-
-    function Viewer:SetBarHeight(H)
-        BarHeight = H or BarHeight
-        Items["ArmorViewer"].Instance.Size = UDim2.new(0, Items["ArmorViewer"].Instance.Size.X.Offset, 0, BarHeight)
-        UpdateBarSize()
-    end
-
-    -- Make the internal references accessible to your main execution script
-    Viewer.Items = Items
     return Viewer
 end
 
