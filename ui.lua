@@ -3179,37 +3179,62 @@ Library.ArmorViewer = function(self)
         Items["ArmorViewer"] = Instances:Create("Frame", {
             Parent = Library.Holder.Instance,
             Name = "\0",
-            Position = UDim2New(0, 0, 0.5, 0),
+            Position = UDim2New(0.5, 0, 0.5, 0), -- Centered anchor helper
             BorderColor3 = FromRGB(0, 0, 0),
             Size = UDim2New(0, MinWidth, 0, BarHeight),
             BorderSizePixel = 0,
             ZIndex = 8,
             BackgroundTransparency = 1,
             BackgroundColor3 = FromRGB(24, 28, 36),
-            AnchorPoint = Vector2New(0, 0.5)
+            AnchorPoint = Vector2New(0.5, 0.5) -- Centered your main frame anchor
         })
 
         Items["ArmorViewer"]:MakeDraggable()
 
-        Items["Title"] = Instances:Create("TextLabel", {
+        -- Text background box container
+        Items["TitleBox"] = Instances:Create("Frame", {
             Parent = Items["ArmorViewer"].Instance,
+            Name = "\0",
+            Position = UDim2New(0.5, 0, 0, 8),
+            AnchorPoint = Vector2New(0.5, 0),
+            Size = UDim2New(0, 100, 0, 22), -- Automatically sizes or stays static
+            AutomaticSize = Enum.AutomaticSize.X, -- Grows if text is long
+            BackgroundColor3 = FromRGB(15, 18, 24),
+            BackgroundTransparency = 0.4, -- Semi-transparent dark background
+            BorderSizePixel = 0,
+            ZIndex = 8
+        })
+        
+        -- Rounded corners for the title box
+        Instances:Create("UICorner", {
+            Parent = Items["TitleBox"].Instance,
+            CornerRadius = UDim.new(0, 4)
+        })
+        
+        -- Padding inside the title box
+        Instances:Create("UIPadding", {
+            Parent = Items["TitleBox"].Instance,
+            PaddingLeft = UDim.new(0, 10),
+            PaddingRight = UDim.new(0, 10)
+        })
+
+        Items["Title"] = Instances:Create("TextLabel", {
+            Parent = Items["TitleBox"].Instance,
             Name = "\0",
             FontFace = Library.Font,
             TextColor3 = FromRGB(255, 255, 255),
             BorderColor3 = FromRGB(0, 0, 0),
             Text = "Armor",
-            Size = UDim2New(1, -16, 0, 15),
-            Position = UDim2New(0, 8, 0, 8),
+            Size = UDim2New(1, 0, 1, 0),
+            Position = UDim2New(0, 0, 0, 0),
             BackgroundTransparency = 1,
             TextTransparency = 0,
             Visible = true,
-            TextXAlignment = Enum.TextXAlignment.Left,
+            TextXAlignment = Enum.TextXAlignment.Center, -- Centered title text
             BorderSizePixel = 0,
-            ZIndex = 8,
-            AutomaticSize = Enum.AutomaticSize.None,
+            ZIndex = 9,
             TextSize = 14,
-            BackgroundColor3 = FromRGB(255, 255, 255)
-        })  Items["Title"]:AddToTheme({TextColor3 = "Text"})
+        }) Items["Title"]:AddToTheme({TextColor3 = "Text"})
 
         Items["Holder"] = Instances:Create("Frame", {
             Parent = Items["ArmorViewer"].Instance,
@@ -3233,7 +3258,7 @@ Library.ArmorViewer = function(self)
             ScrollBarImageColor3 = FromRGB(46, 52, 61),
             MidImage = "rbxassetid://93024691806056",
             BorderColor3 = FromRGB(0, 0, 0),
-            ScrollBarThickness = 3,
+            ScrollBarThickness = 0, -- Set to 0 to hide scrolling bars for clean aesthetic
             Size = UDim2New(1, 0, 1, 0),
             BackgroundTransparency = 1,
             Position = UDim2New(0, 0, 0, 0),
@@ -3242,14 +3267,14 @@ Library.ArmorViewer = function(self)
             TopImage = "rbxassetid://93024691806056",
             BackgroundColor3 = FromRGB(255, 255, 255),
             ScrollingDirection = Enum.ScrollingDirection.X
-        })  Items["RealHolder"]:AddToTheme({ScrollBarImageColor3 = "Border"})
+        }) Items["RealHolder"]:AddToTheme({ScrollBarImageColor3 = "Border"})
 
         Layout = Instances:Create("UIListLayout", {
             Parent = Items["RealHolder"].Instance,
             Name = "\0",
             SortOrder = Enum.SortOrder.LayoutOrder,
             FillDirection = Enum.FillDirection.Horizontal,
-            HorizontalAlignment = Enum.HorizontalAlignment.Left,
+            HorizontalAlignment = Enum.HorizontalAlignment.Center, -- FIXED: This centers items perfectly
             VerticalAlignment = Enum.VerticalAlignment.Center,
             Padding = UDimNew(0, Gap)
         })
@@ -3277,15 +3302,22 @@ Library.ArmorViewer = function(self)
     function Viewer:Add(Name, Icon)
         local NewItemTable = {}
 
+        -- Custom background box container for the item icon
         local NewItem = Instances:Create("Frame", {
             Parent = Items["RealHolder"].Instance,
             Name = "\0",
-            BackgroundTransparency = 1,
+            BackgroundTransparency = 0.4, -- FIXED: Gives the icon a dark semi-transparent box background
+            BackgroundColor3 = FromRGB(15, 18, 24),
             BorderColor3 = FromRGB(0, 0, 0),
             ZIndex = 8,
             Size = UDim2New(0, ItemSize, 0, ItemSize),
-            BorderSizePixel = 0,
-            BackgroundColor3 = FromRGB(255, 255, 255)
+            BorderSizePixel = 0
+        })
+
+        -- Adds smooth rounded corners to your item slot backgrounds
+        Instances:Create("UICorner", {
+            Parent = NewItem.Instance,
+            CornerRadius = UDim.new(0, 8) 
         })
 
         Instances:Create("ImageLabel", {
@@ -3293,11 +3325,11 @@ Library.ArmorViewer = function(self)
             Name = "\0",
             BorderColor3 = FromRGB(0, 0, 0),
             AnchorPoint = Vector2New(0.5, 0.5),
-            ZIndex = 8,
+            ZIndex = 9, -- Raised index layer to sit above the box background
             Image = Icon,
             BackgroundTransparency = 1,
             Position = UDim2New(0.5, 0, 0.5, 0),
-            Size = UDim2New(0, 50, 0, 50),
+            Size = UDim2New(0, 56, 0, 56), -- Slightly scaled up to match picture item proportions
             BorderSizePixel = 0,
             BackgroundColor3 = FromRGB(255, 255, 255)
         })
