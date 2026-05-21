@@ -3117,12 +3117,12 @@ Library.ArmorViewer = function(self)
 
     local MinWidth = 240
     local MaxWidth = 9999
-    local BarHeight = 135
+    local BarHeight = 140
     local ItemSize = 82
     local Gap = 8
     local PadL, PadR = 10, 10
     local PadT, PadB = 10, 10
-    local HeaderH = 42
+    local HeaderH = 45
 
     local function Clamp(x, a, b)
         if (x < a) then return a end
@@ -3157,6 +3157,7 @@ Library.ArmorViewer = function(self)
         local outerW = contentW + 24
         local w = Clamp(outerW, MinWidth, MaxWidth)
 
+        -- Change structural resizing to prevent moving the absolute alignment coordinates
         Items["ArmorViewer"].Instance.Size = UDim2.new(0, w, 0, BarHeight)
         Items["Holder"].Instance.Size = UDim2.new(1, -24, 1, -(HeaderH + 12))
         Items["RealHolder"].Instance.Size = UDim2.new(1, 0, 1, 0)
@@ -3164,7 +3165,7 @@ Library.ArmorViewer = function(self)
     end
 
     do
-        -- Root UI Container (Centered anchor position)
+        -- Root UI Container Frame centered on screen
         Items["ArmorViewer"] = Instances:Create("Frame", {
             Parent = Library.Holder.Instance,
             Name = "\0",
@@ -3180,17 +3181,17 @@ Library.ArmorViewer = function(self)
 
         Items["ArmorViewer"]:MakeDraggable()
 
-        -- FORCE MATCH: Native Roblox Name Plate Box (Centered)
+        -- FIXED: Absolute Native Screen Anchor Box for Title (Bypasses parent frame shifting completely)
         local TitleBox = Instance.new("Frame")
-        TitleBox.Name = "EnforcedTitleBox"
-        TitleBox.Position = UDim2.new(0.5, 0, 0, 4)
-        TitleBox.AnchorPoint = Vector2.new(0.5, 0)
-        TitleBox.Size = UDim2.new(0, 130, 0, 24)
+        TitleBox.Name = "TotalEnforcedTitleBox"
+        TitleBox.Position = UDim2.new(0.5, 0, 0, 2)
+        TitleBox.AnchorPoint = Vector2.new(0.5, 0) -- Locked horizontally center
+        TitleBox.Size = UDim2.new(0, 140, 0, 26)
         TitleBox.AutomaticSize = Enum.AutomaticSize.X
-        TitleBox.BackgroundColor3 = Color3.fromRGB(20, 24, 30)
-        TitleBox.BackgroundTransparency = 0.35 -- Dark semi-transparent text backing box
+        TitleBox.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
+        TitleBox.BackgroundTransparency = 0.35 -- Semi-transparent dark background box behind text
         TitleBox.BorderSizePixel = 0
-        TitleBox.ZIndex = 9
+        TitleBox.ZIndex = 12 -- High layer priority to remain visible over expanding assets
         TitleBox.Parent = Items["ArmorViewer"].Instance
 
         local TitleCorner = Instance.new("UICorner")
@@ -3198,11 +3199,11 @@ Library.ArmorViewer = function(self)
         TitleCorner.Parent = TitleBox
 
         local TitlePadding = Instance.new("UIPadding")
-        TitlePadding.PaddingLeft = UDim.new(0, 12)
-        TitlePadding.PaddingRight = UDim.new(0, 12)
+        TitlePadding.PaddingLeft = UDim.new(0, 14)
+        TitlePadding.PaddingRight = UDim.new(0, 14)
         TitlePadding.Parent = TitleBox
 
-        -- Original label wrapped inside our un-bypassable text plate frame
+        -- Original text label nested directly inside our static bypass anchor frame
         Items["Title"] = Instances:Create("TextLabel", {
             Parent = TitleBox,
             Name = "\0",
@@ -3215,9 +3216,9 @@ Library.ArmorViewer = function(self)
             BackgroundTransparency = 1,
             TextTransparency = 0,
             Visible = true,
-            TextXAlignment = Enum.TextXAlignment.Center, -- Hard-coded centering text format
+            TextXAlignment = Enum.TextXAlignment.Center, -- Hard-locked center text alignments
             BorderSizePixel = 0,
-            ZIndex = 10,
+            ZIndex = 14,
             TextSize = 13,
             BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         }) Items["Title"]:AddToTheme({TextColor3 = "Text"})
@@ -3255,12 +3256,12 @@ Library.ArmorViewer = function(self)
             ScrollingDirection = Enum.ScrollingDirection.X
         }) Items["RealHolder"]:AddToTheme({ScrollBarImageColor3 = "Border"})
 
-        -- FIXED: Replaced UIListLayout with UIGridLayout to force centering calculation automatically
+        -- Grid Layout Engine to automatically distribute multiple elements side-by-side
         local Grid = Instance.new("UIGridLayout")
         Grid.SortOrder = Enum.SortOrder.LayoutOrder
         Grid.CellSize = UDim2.new(0, ItemSize, 0, ItemSize)
         Grid.CellPadding = UDim2.new(0, Gap, 0, 0)
-        Grid.HorizontalAlignment = Enum.HorizontalAlignment.Center -- Items stay locked dead-center
+        Grid.HorizontalAlignment = Enum.HorizontalAlignment.Center -- Forces child items to cluster in center
         Grid.VerticalAlignment = Enum.VerticalAlignment.Center
         Grid.Parent = Items["RealHolder"].Instance
 
@@ -3285,20 +3286,19 @@ Library.ArmorViewer = function(self)
     function Viewer:Add(Name, Icon)
         local NewItemTable = {}
 
-        -- FORCE MATCH: Native Box Panel container behind the items
+        -- FIXED: Completely pure native Frame background plate to prevent theme clear masks
         local ArmorBackBox = Instance.new("Frame")
-        ArmorBackBox.Name = "ForcedArmorBoxPlate"
-        ArmorBackBox.BackgroundColor3 = Color3.fromRGB(20, 24, 30)
-        ArmorBackBox.BackgroundTransparency = 0.45 -- Matching the semi-transparent box style in your picture
+        ArmorBackBox.Name = "ForcedNativeArmorBox"
+        ArmorBackBox.BackgroundColor3 = Color3.fromRGB(20, 24, 32)
+        ArmorBackBox.BackgroundTransparency = 0.45 -- Transparent box backplate visible behind items
         ArmorBackBox.BorderSizePixel = 0
         ArmorBackBox.ZIndex = 8
         ArmorBackBox.Parent = Items["RealHolder"].Instance
 
         local BoxCorner = Instance.new("UICorner")
-        BoxCorner.CornerRadius = UDim.new(0, 8) -- Matches the exact corner roundness of your reference picture
+        BoxCorner.CornerRadius = UDim.new(0, 8) -- Rounded box profile edges
         BoxCorner.Parent = ArmorBackBox
 
-        -- Original layout holder injected right on top of our new background plate box
         local NewItem = Instances:Create("Frame", {
             Parent = ArmorBackBox,
             Name = "\0",
@@ -3315,17 +3315,17 @@ Library.ArmorViewer = function(self)
             Name = "\0",
             BorderColor3 = Color3.fromRGB(0, 0, 0),
             AnchorPoint = Vector2.new(0.5, 0.5),
-            ZIndex = 10,
+            ZIndex = 11,
             Image = Icon,
             BackgroundTransparency = 1,
             Position = UDim2.new(0.5, 0, 0.5, 0),
-            Size = UDim2.new(0, 56, 0, 56), -- Image scaling
+            Size = UDim2.new(0, 58, 0, 58),
             BorderSizePixel = 0,
             BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         })
 
         function NewItemTable:Remove()
-            ArmorBackBox:Destroy() -- Removes everything safely
+            ArmorBackBox:Destroy() -- Safe deletion handling 
             NewItem:Clean()
             Viewer.Items[Name] = nil
             UpdateBarSize()
@@ -3346,7 +3346,6 @@ Library.ArmorViewer = function(self)
         UpdateBarSize()
     end
 
-    -- [Rest of your library wrappers remain untouched below]
     function Viewer:SetVisibility(Bool)
         Items["ArmorViewer"].Instance.Visible = Bool
     end
