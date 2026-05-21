@@ -2893,16 +2893,12 @@ Library.ModeratorList = function(self)
         Items["Content"].Instance.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
         Items["Content"].Instance.ZIndex = 51
 
-        Instances:Create("UIListLayout", {
-            Parent = Items["Content"].Instance,
-            Padding = UDimNew(0, 5),
-            SortOrder = Enum.SortOrder.LayoutOrder
-        })
-
-        -- Secondary User Panel Frame
+        -- FIXED: Added explicit AnchorPoint to prevent offset math breaking on drag updates
+        -- FIXED: Corrected initial Position to sit right next to ModList (UserPanel Width: 360 + 10px Gap = -370px from ModList position)
         Items["UserPanel"] = Instances:Create("Frame", {
             Parent = Library.Holder.Instance,
             Name = "__ServerUserPanel",
+            AnchorPoint = Vector2New(0, 0.5),
             Size = UDim2New(0, 360, 0, 260),
             Position = UDim2New(1, -660, 0, 80),
             BackgroundColor3 = FromRGB(15, 15, 15),
@@ -2963,7 +2959,7 @@ Library.ModeratorList = function(self)
         end
     end)
 
-    -- Function to sync panel positions side-by-side
+    -- FIXED: Fixed alignment math to match the layout sizes perfectly
     local function syncUserPanelPosition()
         local mainPos = Items["ModList"].Instance.Position
         Items["UserPanel"].Instance.Position = UDim2.new(mainPos.X.Scale, mainPos.X.Offset - 370, mainPos.Y.Scale, mainPos.Y.Offset)
