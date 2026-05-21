@@ -5591,7 +5591,7 @@ end
         return Textbox
     end
 
-Library.CreateSettingsPage = function(self, Window, KeybindList, Watermark, ModeratorList, PlayerList)
+Library.CreateSettingsPage = function(self, Window, KeybindList, Watermark, ModeratorList)
     local SettingsPage = Window:Page({Name = "Settings", Columns = 2})
     local SettingsSection = SettingsPage:Section({Name = "Settings", Side = 1}) do
         SettingsSection:Button({
