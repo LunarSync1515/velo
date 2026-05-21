@@ -1,52 +1,52 @@
 if (not LPH_OBFUSCATED) then
-      LPH_ENCNUM = function(toEncrypt, ...)
-          assert(type(toEncrypt) == "number" and #{...} == 0, "LPH_ENCNUM only accepts a single constant double or integer as an argument.")
-          return toEncrypt
-      end
-      LPH_NUMENC = LPH_ENCNUM
-  
-      LPH_ENCSTR = function(toEncrypt, ...)
-          assert(type(toEncrypt) == "string" and #{...} == 0, "LPH_ENCSTR only accepts a single constant string as an argument.")
-          return toEncrypt
-      end
-      LPH_STRENC = LPH_ENCSTR
-  
-      LPH_ENCFUNC = function(toEncrypt, encKey, decKey, ...)
-          assert(type(toEncrypt) == "function" and type(encKey) == "string" and #{...} == 0, "LPH_ENCFUNC accepts a constant function, constant string, and string variable as arguments.")
-          return toEncrypt
-      end
-      LPH_FUNCENC = LPH_ENCFUNC
-  
-      LPH_JIT = function(f, ...)
-          assert(type(f) == "function" and #{...} == 0, "LPH_JIT only accepts a single constant function as an argument.")
-          return f
-      end
-      LPH_JIT_MAX = LPH_JIT
-  
-      LPH_NO_VIRTUALIZE = function(f, ...)
-          assert(type(f) == "function" and #{...} == 0, "LPH_NO_VIRTUALIZE only accepts a single constant function as an argument.")
-          return f
-      end
-  
-      LPH_NO_UPVALUES = function(f, ...)
-          assert(type(setfenv) == "function", "LPH_NO_UPVALUES can only be used on Lua versions with getfenv & setfenv")
-          assert(type(f) == "function" and #{...} == 0, "LPH_NO_UPVALUES only accepts a single constant function as an argument.")
-          return f
-      end
-  
-      LPH_CRASH = function(...)
-          assert(#{...} == 0, "LPH_CRASH does not accept any arguments.")
-      end
-  end
-  
-  local Cheat = { GameName = 'None', Modules = { }, Globals = { } }
-  
-  game:GetService("ScriptContext").Error:Connect(function(msg, trace, scr)
-      if not scr or trace:find("''") or msg:find("''") or trace:find('ChocoSploit') or msg:find('ChocoSploit') then
-          game:GetService("Players").LocalPlayer:Kick('error detected\n' .. msg)
-      end
-  end)
-  
+    LPH_ENCNUM = function(toEncrypt, ...)
+        assert(type(toEncrypt) == "number" and #{...} == 0, "LPH_ENCNUM only accepts a single constant double or integer as an argument.")
+        return toEncrypt
+    end
+    LPH_NUMENC = LPH_ENCNUM
+
+    LPH_ENCSTR = function(toEncrypt, ...)
+        assert(type(toEncrypt) == "string" and #{...} == 0, "LPH_ENCSTR only accepts a single constant string as an argument.")
+        return toEncrypt
+    end
+    LPH_STRENC = LPH_ENCSTR
+
+    LPH_ENCFUNC = function(toEncrypt, encKey, decKey, ...)
+        assert(type(toEncrypt) == "function" and type(encKey) == "string" and #{...} == 0, "LPH_ENCFUNC accepts a constant function, constant string, and string variable as arguments.")
+        return toEncrypt
+    end
+    LPH_FUNCENC = LPH_ENCFUNC
+
+    LPH_JIT = function(f, ...)
+        assert(type(f) == "function" and #{...} == 0, "LPH_JIT only accepts a single constant function as an argument.")
+        return f
+    end
+    LPH_JIT_MAX = LPH_JIT
+
+    LPH_NO_VIRTUALIZE = function(f, ...)
+        assert(type(f) == "function" and #{...} == 0, "LPH_NO_VIRTUALIZE only accepts a single constant function as an argument.")
+        return f
+    end
+
+    LPH_NO_UPVALUES = function(f, ...)
+        assert(type(setfenv) == "function", "LPH_NO_UPVALUES can only be used on Lua versions with getfenv & setfenv")
+        assert(type(f) == "function" and #{...} == 0, "LPH_NO_UPVALUES only accepts a single constant function as an argument.")
+        return f
+    end
+
+    LPH_CRASH = function(...)
+        assert(#{...} == 0, "LPH_CRASH does not accept any arguments.")
+    end
+end
+
+local Cheat = { GameName = 'None', Modules = { }, Globals = { } }
+
+game:GetService("ScriptContext").Error:Connect(function(msg, trace, scr)
+    if not scr or trace:find("''") or msg:find("''") or trace:find('ChocoSploit') or msg:find('ChocoSploit') then
+        game:GetService("Players").LocalPlayer:Kick('error detected\n' .. msg)
+    end
+end)
+
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local UserInputService = game:GetService("UserInputService")
@@ -64,7 +64,7 @@ local Window = Library:Window({Name = 'Aether', Logo = '87697542892608'})
 local Watermark = Window:Watermark("Fallen Survival")
 local KeybindList = Window:KeybindList()
 local ArmorViewer = Window:ArmorViewer()
-local MyModList = Library:ModeratorList() -- This instantiates your beautiful new layout!
+local MyModList = Library:ModeratorList()
 local MyPlayerList = Library:PlayerList()
 local MyTargetHud = Library:TargetHud()
 
@@ -131,84 +131,107 @@ Players.PlayerRemoving:Connect(function(player)
     end)
 end)
 
-  local CombatPage = Window:Page({Name = 'Combat'})
-  local VisualsPage = Window:Page({Name = 'Visuals'})
-  local MiscPage = Window:Page({Name = 'Misc'})
-  local SkinsPage = Window:Page({Name = 'Skins'})
-  local SettingsPage = Library:CreateSettingsPage(Window, KeybindList, Watermark, MyModList, MyPlayerList, MyTargetHud)
+local CombatPage = Window:Page({Name = 'Combat'})
+local VisualsPage = Window:Page({Name = 'Visuals'})
+local MiscPage = Window:Page({Name = 'Misc'})
+local SkinsPage = Window:Page({Name = 'Skins'})
+local SettingsPage = Library:CreateSettingsPage(Window, KeybindList, Watermark, MyModList, MyPlayerList, MyTargetHud)
 
-  local Debris, Players, Workspace, GuiService, RunService, UserInputService, ReplicatedStorage, Lighting, HttpService = game:GetService('Debris'), game:GetService('Players'), game:GetService('Workspace'), game:GetService('GuiService'), game:GetService('RunService'), game:GetService('UserInputService'), game:GetService('ReplicatedStorage'), game:GetService('Lighting'), game:GetService('HttpService')
+-- Initialize the skin reference data early to avoid potential script page dependency conflicts
+Window.Skins = Window.Skins or {}
+
+-- =================================================================
+-- SKINS DROPDOWNS IMPLEMENTATION
+-- =================================================================
+local WeaponsSection = SkinsPage:Section({Name = "Weapon Skins"})
+
+WeaponsSection:Dropdown({
+    Name = "AK-47 Skin",
+    Options = {"Default", "Gold", "Ruby", "Void"},
+    Default = "Default",
+    Callback = function(selectedSkin)
+        Window.Skins["AK47"] = (selectedSkin == "Default") and "" or selectedSkin
+    end
+})
+
+WeaponsSection:Dropdown({
+    Name = "M4A4 Skin",
+    Options = {"Default", "Fade", "Asimov"},
+    Default = "Default",
+    Callback = function(selectedSkin)
+        Window.Skins["M4A4"] = (selectedSkin == "Default") and "" or selectedSkin
+    end
+})
+-- =================================================================
+
+local Debris, Workspace, GuiService, UserInputService, ReplicatedStorage, Lighting = game:GetService('Debris'), game:GetService('Workspace'), game:GetService('GuiService'), game:GetService('UserInputService'), game:GetService('ReplicatedStorage'), game:GetService('Lighting')
   
-  Cheat.Globals.HitSoundNames = {}
-  Cheat.Globals.QuickStackFunctions = {}
-  Cheat.Globals.HitSoundIds = {}
-  Cheat.Globals.DesyncParts = {}
-  Cheat.Globals.DesyncedPositions = {}
-  Cheat.Globals.CharacterAddedHandlers = {}
+Cheat.Globals.HitSoundNames = {}
+Cheat.Globals.QuickStackFunctions = {}
+Cheat.Globals.HitSoundIds = {}
+Cheat.Globals.DesyncParts = {}
+Cheat.Globals.DesyncedPositions = {}
+Cheat.Globals.CharacterAddedHandlers = {}
   
-  Cheat.Globals.LastManip = tick()
-  Cheat.Globals.LastAutoReload = tick()
+Cheat.Globals.LastManip = tick()
+Cheat.Globals.LastAutoReload = tick()
 
-			meleeSpeeds = {
-				["Stone Hatchet"] = 1.65,
-				["Iron Shard Hatchet"] = 1.3,
-				["Steel Axe"] = 1.3,
-				["Chainsaw"] = 1.6,
-				["Stone Pickaxe"] = 1.65,
-				["Iron Shard Pickaxe"] = 1.3,
-				["Bone Tool"] = 1.3,
-				["Candy Cane"] = 1.3,
-				["Carrot Blade"] = 1.3,
-				["Steel Pickaxe"] = 1.3,
-				["Mining Drill"] = 1.6,
-				["Wooden Spear"] = 1.3,
-				["Stone Spear"] = 1.3,
-				["Halloween Scythe"] = 1.3,
-				["Boulder"] = 1.34,
-				["Steel Shovel"] = 1.3,
-				["Salvaged Shovel"] = 1.3,
-				["ez shovel"] = 1.3,
-				["Saw Bat"] = 1.3,
-				["Machete"] = 1.3,
-				["Hammer"] = 1.3,
-			}
+-- =================================================================
+-- MELEE MODIFIERS INITIALIZATION
+-- =================================================================
+local meleeSpeeds = {
+    ["Stone Hatchet"] = 1.65,
+    ["Iron Shard Hatchet"] = 1.3,
+    ["Steel Axe"] = 1.3,
+    ["Chainsaw"] = 1.6,
+    ["Stone Pickaxe"] = 1.65,
+    ["Iron Shard Pickaxe"] = 1.3,
+    ["Bone Tool"] = 1.3,
+    ["Candy Cane"] = 1.3,
+    ["Carrot Blade"] = 1.3,
+    ["Steel Pickaxe"] = 1.3,
+    ["Mining Drill"] = 1.6,
+    ["Wooden Spear"] = 1.3,
+    ["Stone Spear"] = 1.3,
+    ["Halloween Scythe"] = 1.3,
+    ["Boulder"] = 1.34,
+    ["Steel Shovel"] = 1.3,
+    ["Salvaged Shovel"] = 1.3,
+    ["ez shovel"] = 1.3,
+    ["Saw Bat"] = 1.3,
+    ["Machete"] = 1.3,
+    ["Hammer"] = 1.3,
+}
 
-			function applyMeleeCooldown()
-				Info = Cheat.Globals.ToolInfo
-				InfoCopy = Cheat.Globals.ToolInfoCopy
-				if not Info or not InfoCopy then return end
-				enabled = flags.MeleeCooldownReduction
-				for name, data in pairs(Info) do
-					if data.Weapon and data.Weapon.Cooldown ~= nil then
-						copy = InfoCopy[name]
-						if copy and copy.Weapon then
-							if enabled and meleeSpeeds[name] then
-								speed = meleeSpeeds[name]
-								data.Weapon.Cooldown = copy.Weapon.Cooldown / speed
-								if copy.Weapon.SwingAnimSpeed then
-									data.Weapon.SwingAnimSpeed = copy.Weapon.SwingAnimSpeed * speed
-								end
-							else
-								data.Weapon.Cooldown = copy.Weapon.Cooldown
-								if copy.Weapon.SwingAnimSpeed then
-									data.Weapon.SwingAnimSpeed = copy.Weapon.SwingAnimSpeed
-								end
-							end
-						end
-					end
-				end
-			end
+function applyMeleeCooldown()
+    local Info = Cheat.Globals.ToolInfo
+    local InfoCopy = Cheat.Globals.ToolInfoCopy
+    if not Info or not InfoCopy then return end
+    
+    local enabled = flags.MeleeCooldownReduction
+    for name, data in pairs(Info) do
+        if data.Weapon and data.Weapon.Cooldown ~= nil then
+            local copy = InfoCopy[name]
+            if copy and copy.Weapon then
+                if enabled and meleeSpeeds[name] then
+                    local speed = meleeSpeeds[name]
+                    data.Weapon.Cooldown = copy.Weapon.Cooldown / speed
+                    if copy.Weapon.SwingAnimSpeed then
+                        data.Weapon.SwingAnimSpeed = copy.Weapon.SwingAnimSpeed * speed
+                    end
+                else
+                    data.Weapon.Cooldown = copy.Weapon.Cooldown
+                    if copy.Weapon.SwingAnimSpeed then
+                        data.Weapon.SwingAnimSpeed = copy.Weapon.SwingAnimSpeed
+                    end
+                end
+            end
+        end
+    end
+end
+-- =================================================================
 
-			PlayerSection:Toggle({
-				Name = "Melee Cooldown Reduction",
-				Flag = "MeleeCooldownReduction",
-				Callback = function()
-					applyMeleeCooldown()
-				end
-			})
-		end
-
-		end
+-- Add remaining functional scripts, features, loops, and event-hook handlers below this point
 
   local hitsounds
   --// hitsounds
