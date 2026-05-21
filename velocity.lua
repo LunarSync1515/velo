@@ -134,6 +134,7 @@ end)
   local CombatPage = Window:Page({Name = 'Combat'})
   local VisualsPage = Window:Page({Name = 'Visuals'})
   local MiscPage = Window:Page({Name = 'Misc'})
+  local SkinsPage = Window:Page({Name = 'Skins'})
   local SettingsPage = Library:CreateSettingsPage(Window, KeybindList, Watermark, MyModList, MyPlayerList, MyTargetHud)
 
   local Debris, Players, Workspace, GuiService, RunService, UserInputService, ReplicatedStorage, Lighting, HttpService = game:GetService('Debris'), game:GetService('Players'), game:GetService('Workspace'), game:GetService('GuiService'), game:GetService('RunService'), game:GetService('UserInputService'), game:GetService('ReplicatedStorage'), game:GetService('Lighting'), game:GetService('HttpService')
@@ -3021,6 +3022,134 @@ end
               end
           end
       end);
+
+do
+	local VMRoot = ReplicatedStorage:FindFirstChild("VMs")
+	if VMRoot then
+		local VFXVMs = wsVFXFolder and wsVFXFolder:FindFirstChild("VMs")
+
+		local function captureSkinParts(model)
+			local out = {}
+			for _, d in ipairs(model:GetDescendants()) do
+				if d:IsA("BasePart") then
+					out[d.Name] = { TextureID = d:IsA("MeshPart") and d.TextureID or nil, Color = d.Color, Material = d.Material }
+				elseif d:IsA("Decal") or d:IsA("Texture") then
+					out[d.Parent.Name .. "/" .. d.Name] = { Texture = d.Texture }
+				end
+			end
+			return out
+		end
+
+		local skinCache = {}
+
+		local function getSkinSnapshot(gunName, skinName)
+			skinCache[gunName] = skinCache[gunName] or {}
+			if skinCache[gunName][skinName] then return skinCache[gunName][skinName] end
+			local gunFolder = VMRoot:FindFirstChild(gunName)
+			if not gunFolder then return nil end
+			local skinModel = gunFolder:FindFirstChild(skinName)
+			if not skinModel then return nil end
+			local snap = captureSkinParts(skinModel)
+			skinCache[gunName][skinName] = snap
+			return snap
+		end
+
+		local function applySkinToVM(vmModel, gunName, skinName)
+			local snap = getSkinSnapshot(gunName, skinName)
+			if not snap then return end
+			for _, d in ipairs(vmModel:GetDescendants()) do
+				if d:IsA("BasePart") then
+					local entry = snap[d.Name]
+					if entry then
+						if d:IsA("MeshPart") and entry.TextureID then
+							pcall(function() d.TextureID = entry.TextureID end)
+						end
+						if entry.Color then pcall(function() d.Color = entry.Color end) end
+						if entry.Material then pcall(function() d.Material = entry.Material end) end
+					end
+				elseif d:IsA("Decal") or d:IsA("Texture") then
+					local entry = snap[(d.Parent and d.Parent.Name or "") .. "/" .. d.Name]
+					if entry and entry.Texture then
+						pcall(function() d.Texture = entry.Texture end)
+					end
+				end
+			end
+		end
+
+		local lastApplied = setmetatable({}, { __mode = "k" })
+
+		Library:Connect(RunService.RenderStepped, LPH_NO_VIRTUALIZE(function()
+			if not Window or not Window.Skins or not next(Window.Skins) then return end
+			local vmFolder = workspace:FindFirstChild("VFX") and workspace.VFX:FindFirstChild("VMs")
+			if not vmFolder then return end
+			for _, vm in ipairs(vmFolder:GetChildren()) do
+				if vm:IsA("Model") then
+					local gunName = vm.Name
+					local chosen = Window.Skins[gunName]
+					if chosen and chosen ~= "" and lastApplied[vm] ~= chosen then
+						applySkinToVM(vm, gunName, chosen)
+						lastApplied[vm] = chosen
+					end
+				end
+			end
+		end))
+	end
+end
+
+do
+	Cheat.Globals._hookedFetchFns = Cheat.Globals._hookedFetchFns or setmetatable({}, { __mode = "k" })
+	local hookedFetchFns = Cheat.Globals._hookedFetchFns
+
+	local function applyFetchHook()
+		if type(hookfunction) ~= "function" or type(getgc) ~= "function" or not ItemsModule then return end
+		for _, Function in getgc(false) do
+			if type(Function) ~= "function" then continue end
+			if hookedFetchFns[Function] then continue end
+			if type(islclosure) == "function" and not islclosure(Function) then continue end
+			if type(isexecutorclosure) == "function" and isexecutorclosure(Function) then continue end
+			if type(isfunctionhooked) == "function" and isfunctionhooked(Function) then continue end
+
+			local ok, info = pcall(debug.getinfo, Function)
+			if not ok or not info then continue end
+			local source = info.source
+			if not source or not source:find("InventoryController") then continue end
+
+			local upvalues = debug.getupvalues(Function)
+			if type(upvalues[1]) ~= "table"
+				or type(upvalues[2]) ~= "table"
+				or type(upvalues[3]) ~= "table" then continue end
+
+			hookedFetchFns[Function] = true
+			local Old
+			Old = hookfunction(Function, LPH_NO_UPVALUES(function(...)
+				local InventoryTable, a, b = Old(...)
+				if type(InventoryTable) == "table" then
+					local Toolbar = InventoryTable.Toolbar
+					if Toolbar and Window and Window.Skins then
+						for _, ItemData in pairs(Toolbar) do
+							if type(ItemData) == "table" and ItemData.ID then
+								local itemInfo = ItemsModule[ItemData.ID]
+								local itemName = itemInfo and itemInfo.Name
+								local clientSkin = itemName and Window.Skins[itemName] or nil
+								if clientSkin and clientSkin ~= "" then
+									ItemData.Skin = clientSkin
+								end
+							end
+						end
+					end
+				end
+				return InventoryTable, a, b
+			end))
+			break
+		end
+	end
+
+	applyFetchHook()
+	table.insert(Cheat.Globals.CharacterAddedHandlers, function(newChar)
+		task.wait(0.5)
+		applyFetchHook()
+	end)
+end
   
       UpdateChar();
       Client.CharacterAdded:Connect(UpdateChar);
