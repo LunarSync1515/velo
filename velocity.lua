@@ -1,52 +1,52 @@
 if (not LPH_OBFUSCATED) then
-    LPH_ENCNUM = function(toEncrypt, ...)
-        assert(type(toEncrypt) == "number" and #{...} == 0, "LPH_ENCNUM only accepts a single constant double or integer as an argument.")
-        return toEncrypt
-    end
-    LPH_NUMENC = LPH_ENCNUM
-
-    LPH_ENCSTR = function(toEncrypt, ...)
-        assert(type(toEncrypt) == "string" and #{...} == 0, "LPH_ENCSTR only accepts a single constant string as an argument.")
-        return toEncrypt
-    end
-    LPH_STRENC = LPH_ENCSTR
-
-    LPH_ENCFUNC = function(toEncrypt, encKey, decKey, ...)
-        assert(type(toEncrypt) == "function" and type(encKey) == "string" and #{...} == 0, "LPH_ENCFUNC accepts a constant function, constant string, and string variable as arguments.")
-        return toEncrypt
-    end
-    LPH_FUNCENC = LPH_ENCFUNC
-
-    LPH_JIT = function(f, ...)
-        assert(type(f) == "function" and #{...} == 0, "LPH_JIT only accepts a single constant function as an argument.")
-        return f
-    end
-    LPH_JIT_MAX = LPH_JIT
-
-    LPH_NO_VIRTUALIZE = function(f, ...)
-        assert(type(f) == "function" and #{...} == 0, "LPH_NO_VIRTUALIZE only accepts a single constant function as an argument.")
-        return f
-    end
-
-    LPH_NO_UPVALUES = function(f, ...)
-        assert(type(setfenv) == "function", "LPH_NO_UPVALUES can only be used on Lua versions with getfenv & setfenv")
-        assert(type(f) == "function" and #{...} == 0, "LPH_NO_UPVALUES only accepts a single constant function as an argument.")
-        return f
-    end
-
-    LPH_CRASH = function(...)
-        assert(#{...} == 0, "LPH_CRASH does not accept any arguments.")
-    end
-end
-
-local Cheat = { GameName = 'None', Modules = { }, Globals = { } }
-
-game:GetService("ScriptContext").Error:Connect(function(msg, trace, scr)
-    if not scr or trace:find("''") or msg:find("''") or trace:find('ChocoSploit') or msg:find('ChocoSploit') then
-        game:GetService("Players").LocalPlayer:Kick('error detected\n' .. msg)
-    end
-end)
-
+      LPH_ENCNUM = function(toEncrypt, ...)
+          assert(type(toEncrypt) == "number" and #{...} == 0, "LPH_ENCNUM only accepts a single constant double or integer as an argument.")
+          return toEncrypt
+      end
+      LPH_NUMENC = LPH_ENCNUM
+  
+      LPH_ENCSTR = function(toEncrypt, ...)
+          assert(type(toEncrypt) == "string" and #{...} == 0, "LPH_ENCSTR only accepts a single constant string as an argument.")
+          return toEncrypt
+      end
+      LPH_STRENC = LPH_ENCSTR
+  
+      LPH_ENCFUNC = function(toEncrypt, encKey, decKey, ...)
+          assert(type(toEncrypt) == "function" and type(encKey) == "string" and #{...} == 0, "LPH_ENCFUNC accepts a constant function, constant string, and string variable as arguments.")
+          return toEncrypt
+      end
+      LPH_FUNCENC = LPH_ENCFUNC
+  
+      LPH_JIT = function(f, ...)
+          assert(type(f) == "function" and #{...} == 0, "LPH_JIT only accepts a single constant function as an argument.")
+          return f
+      end
+      LPH_JIT_MAX = LPH_JIT
+  
+      LPH_NO_VIRTUALIZE = function(f, ...)
+          assert(type(f) == "function" and #{...} == 0, "LPH_NO_VIRTUALIZE only accepts a single constant function as an argument.")
+          return f
+      end
+  
+      LPH_NO_UPVALUES = function(f, ...)
+          assert(type(setfenv) == "function", "LPH_NO_UPVALUES can only be used on Lua versions with getfenv & setfenv")
+          assert(type(f) == "function" and #{...} == 0, "LPH_NO_UPVALUES only accepts a single constant function as an argument.")
+          return f
+      end
+  
+      LPH_CRASH = function(...)
+          assert(#{...} == 0, "LPH_CRASH does not accept any arguments.")
+      end
+  end
+  
+  local Cheat = { GameName = 'None', Modules = { }, Globals = { } }
+  
+  game:GetService("ScriptContext").Error:Connect(function(msg, trace, scr)
+      if not scr or trace:find("''") or msg:find("''") or trace:find('ChocoSploit') or msg:find('ChocoSploit') then
+          game:GetService("Players").LocalPlayer:Kick('error detected\n' .. msg)
+      end
+  end)
+  
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local UserInputService = game:GetService("UserInputService")
@@ -64,7 +64,7 @@ local Window = Library:Window({Name = 'Aether', Logo = '87697542892608'})
 local Watermark = Window:Watermark("Fallen Survival")
 local KeybindList = Window:KeybindList()
 local ArmorViewer = Window:ArmorViewer()
-local MyModList = Library:ModeratorList()
+local MyModList = Library:ModeratorList() -- This instantiates your beautiful new layout!
 local MyPlayerList = Library:PlayerList()
 local MyTargetHud = Library:TargetHud()
 
@@ -131,108 +131,21 @@ Players.PlayerRemoving:Connect(function(player)
     end)
 end)
 
-local CombatPage = Window:Page({Name = 'Combat'})
-local VisualsPage = Window:Page({Name = 'Visuals'})
-local MiscPage = Window:Page({Name = 'Misc'})
-local SkinsPage = Window:Page({Name = 'Skins'})
-local SettingsPage = Library:CreateSettingsPage(Window, KeybindList, Watermark, MyModList, MyPlayerList, MyTargetHud)
+  local CombatPage = Window:Page({Name = 'Combat'})
+  local VisualsPage = Window:Page({Name = 'Visuals'})
+  local MiscPage = Window:Page({Name = 'Misc'})
+  local SettingsPage = Library:CreateSettingsPage(Window, KeybindList, Watermark, MyModList, MyPlayerList, MyTargetHud)
 
--- Initialize the skin reference data early to avoid potential script page dependency conflicts
-Window.Skins = Window.Skins or {}
-
--- =================================================================
--- SKINS DROPDOWNS IMPLEMENTATION
--- =================================================================
-local WeaponsSection = SkinsPage:Section({Name = "Weapon Skins"})
-
-WeaponsSection:Dropdown({
-    Name = "AK47 Skin",
-    Options = {"Default", "Hyperwave", "Diablo", "BlueGem"},
-    Default = "Default",
-    Callback = function(selectedSkin)
-        Window.Skins["AK47"] = (selectedSkin == "Default") and "" or selectedSkin
-    end
-})
-
-WeaponsSection:Dropdown({
-    Name = "M4A4 Skin",
-    Options = {"Default", "Fade", "Asimov"},
-    Default = "Default",
-    Callback = function(selectedSkin)
-        Window.Skins["M4A4"] = (selectedSkin == "Default") and "" or selectedSkin
-    end
-})
--- =================================================================
-
-local Debris, Workspace, GuiService, UserInputService, ReplicatedStorage, Lighting = game:GetService('Debris'), game:GetService('Workspace'), game:GetService('GuiService'), game:GetService('UserInputService'), game:GetService('ReplicatedStorage'), game:GetService('Lighting')
+  local Debris, Players, Workspace, GuiService, RunService, UserInputService, ReplicatedStorage, Lighting, HttpService = game:GetService('Debris'), game:GetService('Players'), game:GetService('Workspace'), game:GetService('GuiService'), game:GetService('RunService'), game:GetService('UserInputService'), game:GetService('ReplicatedStorage'), game:GetService('Lighting'), game:GetService('HttpService')
   
-Cheat.Globals.HitSoundNames = {}
-Cheat.Globals.QuickStackFunctions = {}
-Cheat.Globals.HitSoundIds = {}
-Cheat.Globals.DesyncParts = {}
-Cheat.Globals.DesyncedPositions = {}
-Cheat.Globals.CharacterAddedHandlers = {}
+  Cheat.Globals.HitSoundNames = {}
+  Cheat.Globals.QuickStackFunctions = {}
+  Cheat.Globals.HitSoundIds = {}
+  Cheat.Globals.DesyncParts = {}
+  Cheat.Globals.DesyncedPositions = {}
   
-Cheat.Globals.LastManip = tick()
-Cheat.Globals.LastAutoReload = tick()
-
--- =================================================================
--- MELEE MODIFIERS INITIALIZATION
--- =================================================================
-local meleeSpeeds = {
-    ["Stone Hatchet"] = 1.65,
-    ["Iron Shard Hatchet"] = 1.3,
-    ["Steel Axe"] = 1.3,
-    ["Chainsaw"] = 1.6,
-    ["Stone Pickaxe"] = 1.65,
-    ["Iron Shard Pickaxe"] = 1.3,
-    ["Bone Tool"] = 1.3,
-    ["Candy Cane"] = 1.3,
-    ["Carrot Blade"] = 1.3,
-    ["Steel Pickaxe"] = 1.3,
-    ["Mining Drill"] = 1.6,
-    ["Wooden Spear"] = 1.3,
-    ["Stone Spear"] = 1.3,
-    ["Halloween Scythe"] = 1.3,
-    ["Boulder"] = 1.34,
-    ["Steel Shovel"] = 1.3,
-    ["Salvaged Shovel"] = 1.3,
-    ["ez shovel"] = 1.3,
-    ["Saw Bat"] = 1.3,
-    ["Machete"] = 1.3,
-    ["Hammer"] = 1.3,
-}
-
-function applyMeleeCooldown()
-    local Info = Cheat.Globals.ToolInfo
-    local InfoCopy = Cheat.Globals.ToolInfoCopy
-    if not Info or not InfoCopy then return end
-    
-    local enabled = flags.MeleeCooldownReduction
-    for name, data in pairs(Info) do
-        if data.Weapon and data.Weapon.Cooldown ~= nil then
-            local copy = InfoCopy[name]
-            if copy and copy.Weapon then
-                if enabled and meleeSpeeds[name] then
-                    local speed = meleeSpeeds[name]
-                    data.Weapon.Cooldown = copy.Weapon.Cooldown / speed
-                    if copy.Weapon.SwingAnimSpeed then
-                        data.Weapon.SwingAnimSpeed = copy.Weapon.SwingAnimSpeed * speed
-                    end
-                else
-                    data.Weapon.Cooldown = copy.Weapon.Cooldown
-                    if copy.Weapon.SwingAnimSpeed then
-                        data.Weapon.SwingAnimSpeed = copy.Weapon.SwingAnimSpeed
-                    end
-                end
-            end
-        end
-    end
-end
--- =================================================================
-
--- Add remaining functional scripts, features, loops, and event-hook handlers below this point
-
+  Cheat.Globals.LastManip = tick()
+  Cheat.Globals.LastAutoReload = tick()
   local hitsounds
   --// hitsounds
   do
@@ -847,12 +760,10 @@ do
                   Name = "Bunnyhop",
                   Flag = "Bunnyhop"
               });
-			
           end
           
-do --// Exploits
+          do --// Exploits
               local ExploitsSection = MiscPage:Section({Name = "Exploits", Side = 2})
-              
               ExploitsSection:Toggle({
                   Name = "No Bob",
                   Flag = "NoBob"
@@ -893,19 +804,6 @@ do --// Exploits
                       end
                   end;
               });
-
-              -- =================================================================
-              -- MELEE COOLDOWN TOGGLE ADDED HERE
-              -- =================================================================
-              ExploitsSection:Toggle({
-                  Name = "Melee Cooldown Reduction",
-                  Flag = "MeleeCooldownReduction",
-                  Callback = function()
-                      -- Ensure 'applyMeleeCooldown' is defined elsewhere in your script
-                      applyMeleeCooldown() 
-                  end
-              })
-              -- =================================================================
           end
       end
   end
@@ -3123,134 +3021,6 @@ end
               end
           end
       end);
-
-do
-	local VMRoot = ReplicatedStorage:FindFirstChild("VMs")
-	if VMRoot then
-		local VFXVMs = wsVFXFolder and wsVFXFolder:FindFirstChild("VMs")
-
-		local function captureSkinParts(model)
-			local out = {}
-			for _, d in ipairs(model:GetDescendants()) do
-				if d:IsA("BasePart") then
-					out[d.Name] = { TextureID = d:IsA("MeshPart") and d.TextureID or nil, Color = d.Color, Material = d.Material }
-				elseif d:IsA("Decal") or d:IsA("Texture") then
-					out[d.Parent.Name .. "/" .. d.Name] = { Texture = d.Texture }
-				end
-			end
-			return out
-		end
-
-		local skinCache = {}
-
-		local function getSkinSnapshot(gunName, skinName)
-			skinCache[gunName] = skinCache[gunName] or {}
-			if skinCache[gunName][skinName] then return skinCache[gunName][skinName] end
-			local gunFolder = VMRoot:FindFirstChild(gunName)
-			if not gunFolder then return nil end
-			local skinModel = gunFolder:FindFirstChild(skinName)
-			if not skinModel then return nil end
-			local snap = captureSkinParts(skinModel)
-			skinCache[gunName][skinName] = snap
-			return snap
-		end
-
-		local function applySkinToVM(vmModel, gunName, skinName)
-			local snap = getSkinSnapshot(gunName, skinName)
-			if not snap then return end
-			for _, d in ipairs(vmModel:GetDescendants()) do
-				if d:IsA("BasePart") then
-					local entry = snap[d.Name]
-					if entry then
-						if d:IsA("MeshPart") and entry.TextureID then
-							pcall(function() d.TextureID = entry.TextureID end)
-						end
-						if entry.Color then pcall(function() d.Color = entry.Color end) end
-						if entry.Material then pcall(function() d.Material = entry.Material end) end
-					end
-				elseif d:IsA("Decal") or d:IsA("Texture") then
-					local entry = snap[(d.Parent and d.Parent.Name or "") .. "/" .. d.Name]
-					if entry and entry.Texture then
-						pcall(function() d.Texture = entry.Texture end)
-					end
-				end
-			end
-		end
-
-		local lastApplied = setmetatable({}, { __mode = "k" })
-
-		Library:Connect(RunService.RenderStepped, LPH_NO_VIRTUALIZE(function()
-			if not Window or not Window.Skins or not next(Window.Skins) then return end
-			local vmFolder = workspace:FindFirstChild("VFX") and workspace.VFX:FindFirstChild("VMs")
-			if not vmFolder then return end
-			for _, vm in ipairs(vmFolder:GetChildren()) do
-				if vm:IsA("Model") then
-					local gunName = vm.Name
-					local chosen = Window.Skins[gunName]
-					if chosen and chosen ~= "" and lastApplied[vm] ~= chosen then
-						applySkinToVM(vm, gunName, chosen)
-						lastApplied[vm] = chosen
-					end
-				end
-			end
-		end))
-	end
-end
-
-do
-	Cheat.Globals._hookedFetchFns = Cheat.Globals._hookedFetchFns or setmetatable({}, { __mode = "k" })
-	local hookedFetchFns = Cheat.Globals._hookedFetchFns
-
-	local function applyFetchHook()
-		if type(hookfunction) ~= "function" or type(getgc) ~= "function" or not ItemsModule then return end
-		for _, Function in getgc(false) do
-			if type(Function) ~= "function" then continue end
-			if hookedFetchFns[Function] then continue end
-			if type(islclosure) == "function" and not islclosure(Function) then continue end
-			if type(isexecutorclosure) == "function" and isexecutorclosure(Function) then continue end
-			if type(isfunctionhooked) == "function" and isfunctionhooked(Function) then continue end
-
-			local ok, info = pcall(debug.getinfo, Function)
-			if not ok or not info then continue end
-			local source = info.source
-			if not source or not source:find("InventoryController") then continue end
-
-			local upvalues = debug.getupvalues(Function)
-			if type(upvalues[1]) ~= "table"
-				or type(upvalues[2]) ~= "table"
-				or type(upvalues[3]) ~= "table" then continue end
-
-			hookedFetchFns[Function] = true
-			local Old
-			Old = hookfunction(Function, LPH_NO_UPVALUES(function(...)
-				local InventoryTable, a, b = Old(...)
-				if type(InventoryTable) == "table" then
-					local Toolbar = InventoryTable.Toolbar
-					if Toolbar and Window and Window.Skins then
-						for _, ItemData in pairs(Toolbar) do
-							if type(ItemData) == "table" and ItemData.ID then
-								local itemInfo = ItemsModule[ItemData.ID]
-								local itemName = itemInfo and itemInfo.Name
-								local clientSkin = itemName and Window.Skins[itemName] or nil
-								if clientSkin and clientSkin ~= "" then
-									ItemData.Skin = clientSkin
-								end
-							end
-						end
-					end
-				end
-				return InventoryTable, a, b
-			end))
-			break
-		end
-	end
-
-	applyFetchHook()
-	table.insert(Cheat.Globals.CharacterAddedHandlers, function(newChar)
-		task.wait(0.5)
-		applyFetchHook()
-	end)
-end
   
       UpdateChar();
       Client.CharacterAdded:Connect(UpdateChar);
