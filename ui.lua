@@ -3115,14 +3115,14 @@ Library.ArmorViewer = function(self)
     local Items = {}
     local Layout
 
-    local MinWidth = 180
+    local MinWidth = 220 -- Bumped slightly to give single items breathing room
     local MaxWidth = 9999
-    local BarHeight = 120
+    local BarHeight = 140 -- Added a bit of height for the centered top title
     local ItemSize = 82
     local Gap = 8
     local PadL, PadR = 8, 8
     local PadT, PadB = 6, 10
-    local HeaderH = 32
+    local HeaderH = 40 -- Increased to give the top centered title space
 
     local function Clamp(x, a, b)
         if (x < a) then return a end
@@ -3154,6 +3154,7 @@ Library.ArmorViewer = function(self)
             contentW = PadL + PadR + (n * ItemSize) + ((n - 1) * Gap)
         end
 
+        -- Ensure the container scales wide enough to center items perfectly
         local outerW = contentW + 16
         local w = Clamp(outerW, MinWidth, MaxWidth)
 
@@ -3167,43 +3168,41 @@ Library.ArmorViewer = function(self)
         Items["ArmorViewer"] = Instances:Create("Frame", {
             Parent = Library.Holder.Instance,
             Name = "\0",
-            Position = UDim2New(0.5, 0, 0.5, 0), -- Centered anchor helper
+            Position = UDim2New(0.5, 0, 0.5, 0),
             BorderColor3 = FromRGB(0, 0, 0),
             Size = UDim2New(0, MinWidth, 0, BarHeight),
             BorderSizePixel = 0,
             ZIndex = 8,
             BackgroundTransparency = 1,
             BackgroundColor3 = FromRGB(24, 28, 36),
-            AnchorPoint = Vector2New(0.5, 0.5) -- Centered your main frame anchor
+            AnchorPoint = Vector2New(0.5, 0.5)
         })
 
         Items["ArmorViewer"]:MakeDraggable()
 
-        -- Text background box container
+        -- FIXED: Centered Title Plate Box directly above the icons
         Items["TitleBox"] = Instances:Create("Frame", {
             Parent = Items["ArmorViewer"].Instance,
             Name = "\0",
-            Position = UDim2New(0.5, 0, 0, 8),
-            AnchorPoint = Vector2New(0.5, 0),
-            Size = UDim2New(0, 100, 0, 22), -- Automatically sizes or stays static
-            AutomaticSize = Enum.AutomaticSize.X, -- Grows if text is long
-            BackgroundColor3 = FromRGB(15, 18, 24),
-            BackgroundTransparency = 0.4, -- Semi-transparent dark background
+            Position = UDim2New(0.5, 0, 0, 4),
+            AnchorPoint = Vector2New(0.5, 0), -- Anchor center top
+            Size = UDim2New(0, 120, 0, 24),
+            AutomaticSize = Enum.AutomaticSize.X, -- Plate grows if name is long
+            BackgroundColor3 = FromRGB(20, 20, 20),
+            BackgroundTransparency = 0.3, -- Clear visibility backdrop
             BorderSizePixel = 0,
-            ZIndex = 8
+            ZIndex = 9
         })
         
-        -- Rounded corners for the title box
         Instances:Create("UICorner", {
             Parent = Items["TitleBox"].Instance,
-            CornerRadius = UDim.new(0, 4)
+            CornerRadius = UDim.new(0, 5)
         })
         
-        -- Padding inside the title box
         Instances:Create("UIPadding", {
             Parent = Items["TitleBox"].Instance,
-            PaddingLeft = UDim.new(0, 10),
-            PaddingRight = UDim.new(0, 10)
+            PaddingLeft = UDim.new(0, 12),
+            PaddingRight = UDim.new(0, 12)
         })
 
         Items["Title"] = Instances:Create("TextLabel", {
@@ -3218,10 +3217,10 @@ Library.ArmorViewer = function(self)
             BackgroundTransparency = 1,
             TextTransparency = 0,
             Visible = true,
-            TextXAlignment = Enum.TextXAlignment.Center, -- Centered title text
+            TextXAlignment = Enum.TextXAlignment.Center, -- Center alignment text
             BorderSizePixel = 0,
-            ZIndex = 9,
-            TextSize = 14,
+            ZIndex = 10,
+            TextSize = 13,
         }) Items["Title"]:AddToTheme({TextColor3 = "Text"})
 
         Items["Holder"] = Instances:Create("Frame", {
@@ -3246,7 +3245,7 @@ Library.ArmorViewer = function(self)
             ScrollBarImageColor3 = FromRGB(46, 52, 61),
             MidImage = "rbxassetid://93024691806056",
             BorderColor3 = FromRGB(0, 0, 0),
-            ScrollBarThickness = 0, -- Set to 0 to hide scrolling bars for clean aesthetic
+            ScrollBarThickness = 0, -- Invisible scroll bar keeps layout clean
             Size = UDim2New(1, 0, 1, 0),
             BackgroundTransparency = 1,
             Position = UDim2New(0, 0, 0, 0),
@@ -3262,7 +3261,7 @@ Library.ArmorViewer = function(self)
             Name = "\0",
             SortOrder = Enum.SortOrder.LayoutOrder,
             FillDirection = Enum.FillDirection.Horizontal,
-            HorizontalAlignment = Enum.HorizontalAlignment.Center, -- FIXED: This centers items perfectly
+            HorizontalAlignment = Enum.HorizontalAlignment.Center, -- Centers layout horizontally
             VerticalAlignment = Enum.VerticalAlignment.Center,
             Padding = UDimNew(0, Gap)
         })
@@ -3290,11 +3289,11 @@ Library.ArmorViewer = function(self)
     function Viewer:Add(Name, Icon)
         local NewItemTable = {}
 
-        -- Custom background box container for the item icon
+        -- FIXED: Background Box container for the armor slots
         local NewItem = Instances:Create("Frame", {
             Parent = Items["RealHolder"].Instance,
             Name = "\0",
-            BackgroundTransparency = 0.4, -- FIXED: Gives the icon a dark semi-transparent box background
+            BackgroundTransparency = 0.4, -- Visible dark backing plate
             BackgroundColor3 = FromRGB(15, 18, 24),
             BorderColor3 = FromRGB(0, 0, 0),
             ZIndex = 8,
@@ -3302,22 +3301,23 @@ Library.ArmorViewer = function(self)
             BorderSizePixel = 0
         })
 
-        -- Adds smooth rounded corners to your item slot backgrounds
+        -- Smooth rounded corners for the backing box
         Instances:Create("UICorner", {
             Parent = NewItem.Instance,
-            CornerRadius = UDim.new(0, 8) 
+            CornerRadius = UDim.new(0, 8)
         })
 
+        -- Inner armor illustration
         Instances:Create("ImageLabel", {
             Parent = NewItem.Instance,
             Name = "\0",
             BorderColor3 = FromRGB(0, 0, 0),
             AnchorPoint = Vector2New(0.5, 0.5),
-            ZIndex = 9, -- Raised index layer to sit above the box background
+            ZIndex = 10, -- Higher layer order so it renders on top of the slot plate
             Image = Icon,
             BackgroundTransparency = 1,
             Position = UDim2New(0.5, 0, 0.5, 0),
-            Size = UDim2New(0, 56, 0, 56), -- Slightly scaled up to match picture item proportions
+            Size = UDim2New(0, 58, 0, 58),
             BorderSizePixel = 0,
             BackgroundColor3 = FromRGB(255, 255, 255)
         })
