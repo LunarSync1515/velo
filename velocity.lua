@@ -144,6 +144,7 @@ end)
   Cheat.Globals.HitSoundIds = {}
   Cheat.Globals.DesyncParts = {}
   Cheat.Globals.DesyncedPositions = {}
+  Cheat.Globals.CharacterAddedHandlers = {}
   
   Cheat.Globals.LastManip = tick()
   Cheat.Globals.LastAutoReload = tick()
