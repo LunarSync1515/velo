@@ -3129,7 +3129,7 @@ Library.ArmorViewer = function(self)
     local function CountItems()
         local n = 0
         for _, c in ipairs(Items["RealHolder"].Instance:GetChildren()) do
-            if (c:IsA("Frame") or c:IsA("CanvasGroup")) then
+            if (c:IsA("Frame")) then
                 n += 1
             end
         end
@@ -3175,15 +3175,15 @@ Library.ArmorViewer = function(self)
 
         Items["ArmorViewer"]:MakeDraggable()
 
-        -- ENFORCED: TitleBox container background built cleanly using your library factory system
+        -- Title text label container block built safely into your factory creation system
         Items["TitleBox"] = Instances:Create("Frame", {
             Parent = Items["ArmorViewer"].Instance,
             Name = "\0",
             Position = UDim2New(0.5, 0, 0, 4),
-            AnchorPoint = Vector2New(0.5, 0), -- Locks directly to horizontal middle
+            AnchorPoint = Vector2New(0.5, 0), -- Center-anchored horizontally
             Size = UDim2New(0, 130, 0, 24),
             AutomaticSize = Enum.AutomaticSize.X,
-            BackgroundColor3 = FromRGB(20, 24, 30),
+            BackgroundColor3 = FromRGB(15, 18, 24),
             BackgroundTransparency = 0.35,
             BorderSizePixel = 0,
             ZIndex = 12
@@ -3209,7 +3209,7 @@ Library.ArmorViewer = function(self)
             Size = UDim2New(1, 0, 1, 0),
             Position = UDim2New(0, 0, 0, 0),
             BackgroundTransparency = 1,
-            TextXAlignment = Enum.TextXAlignment.Center,
+            TextXAlignment = Enum.TextXAlignment.Center, -- Hard-locked to middle
             BorderSizePixel = 0,
             ZIndex = 14,
             TextSize = 13,
@@ -3249,12 +3249,12 @@ Library.ArmorViewer = function(self)
             ScrollingDirection = Enum.ScrollingDirection.X
         }) Items["RealHolder"]:AddToTheme({ScrollBarImageColor3 = "Border"})
 
-        -- REPLACED: Changed UIListLayout to UIGridLayout using pure script injections to handle multi-item alignment
+        -- Grid Layout Engine to automatically distribute multiple elements side-by-side cleanly
         local Grid = Instance.new("UIGridLayout")
         Grid.SortOrder = Enum.SortOrder.LayoutOrder
         Grid.CellSize = UDim2New(0, ItemSize, 0, ItemSize)
         Grid.CellPadding = UDim2New(0, Gap, 0, 0)
-        Grid.HorizontalAlignment = Enum.HorizontalAlignment.Center -- Automatically centers all items inside the frame
+        Grid.HorizontalAlignment = Enum.HorizontalAlignment.Center -- Forces items to cluster tightly in the center
         Grid.VerticalAlignment = Enum.VerticalAlignment.Center
         Grid.Parent = Items["RealHolder"].Instance
 
@@ -3281,7 +3281,7 @@ Library.ArmorViewer = function(self)
     function Viewer:Add(Name, Icon)
         local NewItemTable = { }
 
-        -- ENFORCED: Slot background box plate integrated cleanly using framework creation factories
+        -- Slot background box plate integrated cleanly via creation factory
         local ArmorBackBox = Instances:Create("Frame", {
             Parent = Items["RealHolder"].Instance,
             Name = "\0",
