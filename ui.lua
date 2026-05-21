@@ -5631,17 +5631,6 @@ Library.CreateSettingsPage = function(self, Window, KeybindList, Watermark, Mode
         })
 
         SettingsSection:Toggle({
-            Name = "Player List",
-            Flag = "Player list",
-            Default = true,
-            Callback = function(Value)
-                if PlayerList then
-                    PlayerList:SetVisibility(Value)
-                end
-            end
-        })
-
-        SettingsSection:Toggle({
             Name = "Target HUD",
             Flag = "TargetHudEnabled",
             Default = true,
