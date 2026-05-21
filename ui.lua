@@ -3153,7 +3153,6 @@ Library.ArmorViewer = function(self)
         local outerW = contentW + 24
         local w = Clamp(outerW, MinWidth, MaxWidth)
 
-        -- Change structural resizing to prevent moving the absolute alignment coordinates
         Items["ArmorViewer"].Instance.Size = UDim2.new(0, w, 0, BarHeight)
         Items["Holder"].Instance.Size = UDim2.new(1, -24, 1, -(HeaderH + 12))
         Items["RealHolder"].Instance.Size = UDim2.new(1, 0, 1, 0)
@@ -3161,7 +3160,7 @@ Library.ArmorViewer = function(self)
     end
 
     do
-        -- Root UI Container Frame centered on screen
+        -- Root UI Main Container Frame
         Items["ArmorViewer"] = Instances:Create("Frame", {
             Parent = Library.Holder.Instance,
             Name = "\0",
@@ -3177,31 +3176,34 @@ Library.ArmorViewer = function(self)
 
         Items["ArmorViewer"]:MakeDraggable()
 
-        -- FIXED: Absolute Native Screen Anchor Box for Title (Bypasses parent frame shifting completely)
-        local TitleBox = Instance.new("Frame")
-        TitleBox.Name = "TotalEnforcedTitleBox"
-        TitleBox.Position = UDim2.new(0.5, 0, 0, 2)
-        TitleBox.AnchorPoint = Vector2.new(0.5, 0) -- Locked horizontally center
-        TitleBox.Size = UDim2.new(0, 140, 0, 26)
-        TitleBox.AutomaticSize = Enum.AutomaticSize.X
-        TitleBox.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
-        TitleBox.BackgroundTransparency = 0.35 -- Semi-transparent dark background box behind text
-        TitleBox.BorderSizePixel = 0
-        TitleBox.ZIndex = 12 -- High layer priority to remain visible over expanding assets
-        TitleBox.Parent = Items["ArmorViewer"].Instance
+        -- FIXED: Background Text Frame explicitly bound to layout tracking
+        local TitleBoxObj = Instance.new("Frame")
+        TitleBoxObj.Name = "TotalEnforcedTitleBox"
+        TitleBoxObj.Position = UDim2.new(0.5, 0, 0, 4)
+        TitleBoxObj.AnchorPoint = Vector2.new(0.5, 0) -- Locks Title to absolute center position
+        TitleBoxObj.Size = UDim2.new(0, 140, 0, 26)
+        TitleBoxObj.AutomaticSize = Enum.AutomaticSize.X
+        TitleBoxObj.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
+        TitleBoxObj.BackgroundTransparency = 0.4
+        TitleBoxObj.BorderSizePixel = 0
+        TitleBoxObj.ZIndex = 12
+        TitleBoxObj.Parent = Items["ArmorViewer"].Instance
 
         local TitleCorner = Instance.new("UICorner")
         TitleCorner.CornerRadius = UDim.new(0, 6)
-        TitleCorner.Parent = TitleBox
+        TitleCorner.Parent = TitleBoxObj
 
         local TitlePadding = Instance.new("UIPadding")
         TitlePadding.PaddingLeft = UDim.new(0, 14)
         TitlePadding.PaddingRight = UDim.new(0, 14)
-        TitlePadding.Parent = TitleBox
+        TitlePadding.Parent = TitleBoxObj
 
-        -- Original text label nested directly inside our static bypass anchor frame
+        -- Bind the custom background box to the framework list layout dictionary wrapper
+        Items["TitleBox"] = { Instance = TitleBoxObj }
+
+        -- Main Title string element
         Items["Title"] = Instances:Create("TextLabel", {
-            Parent = TitleBox,
+            Parent = TitleBoxObj,
             Name = "\0",
             FontFace = Library.Font,
             TextColor3 = Color3.fromRGB(255, 255, 255),
@@ -3212,7 +3214,7 @@ Library.ArmorViewer = function(self)
             BackgroundTransparency = 1,
             TextTransparency = 0,
             Visible = true,
-            TextXAlignment = Enum.TextXAlignment.Center, -- Hard-locked center text alignments
+            TextXAlignment = Enum.TextXAlignment.Center,
             BorderSizePixel = 0,
             ZIndex = 14,
             TextSize = 13,
@@ -3252,12 +3254,12 @@ Library.ArmorViewer = function(self)
             ScrollingDirection = Enum.ScrollingDirection.X
         }) Items["RealHolder"]:AddToTheme({ScrollBarImageColor3 = "Border"})
 
-        -- Grid Layout Engine to automatically distribute multiple elements side-by-side
+        -- Grid Layout Engine layout structure
         local Grid = Instance.new("UIGridLayout")
         Grid.SortOrder = Enum.SortOrder.LayoutOrder
         Grid.CellSize = UDim2.new(0, ItemSize, 0, ItemSize)
         Grid.CellPadding = UDim2.new(0, Gap, 0, 0)
-        Grid.HorizontalAlignment = Enum.HorizontalAlignment.Center -- Forces child items to cluster in center
+        Grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
         Grid.VerticalAlignment = Enum.VerticalAlignment.Center
         Grid.Parent = Items["RealHolder"].Instance
 
@@ -3282,17 +3284,17 @@ Library.ArmorViewer = function(self)
     function Viewer:Add(Name, Icon)
         local NewItemTable = {}
 
-        -- FIXED: Completely pure native Frame background plate to prevent theme clear masks
-        local ArmorBackBox = Instance.new("Frame")
+        -- FIXED: Replaced clean frames with CanvasGroup layers to bypass clipping restrictions
+        local ArmorBackBox = Instance.new("CanvasGroup")
         ArmorBackBox.Name = "ForcedNativeArmorBox"
         ArmorBackBox.BackgroundColor3 = Color3.fromRGB(20, 24, 32)
-        ArmorBackBox.BackgroundTransparency = 0.45 -- Transparent box backplate visible behind items
+        ArmorBackBox.BackgroundTransparency = 0.45
         ArmorBackBox.BorderSizePixel = 0
         ArmorBackBox.ZIndex = 8
         ArmorBackBox.Parent = Items["RealHolder"].Instance
 
         local BoxCorner = Instance.new("UICorner")
-        BoxCorner.CornerRadius = UDim.new(0, 8) -- Rounded box profile edges
+        BoxCorner.CornerRadius = UDim.new(0, 8)
         BoxCorner.Parent = ArmorBackBox
 
         local NewItem = Instances:Create("Frame", {
@@ -3321,7 +3323,7 @@ Library.ArmorViewer = function(self)
         })
 
         function NewItemTable:Remove()
-            ArmorBackBox:Destroy() -- Safe deletion handling 
+            ArmorBackBox:Destroy()
             NewItem:Clean()
             Viewer.Items[Name] = nil
             UpdateBarSize()
@@ -3397,6 +3399,8 @@ Library.ArmorViewer = function(self)
         UpdateBarSize()
     end
 
+    -- Make the internal references accessible to your main execution script
+    Viewer.Items = Items
     return Viewer
 end
 
