@@ -65,13 +65,11 @@ local Watermark = Window:Watermark("Fallen Survival")
 local KeybindList = Window:KeybindList()
 local ArmorViewer = Window:ArmorViewer()
 local MyModList = Library:ModeratorList() -- This instantiates your beautiful new layout!
-local MyPlayerList = Library:PlayerList()
 local MyTargetHud = Library:TargetHud()
 
 Library.KeybindListInstance = KeybindList
 Library.ArmorViewerInstance = ArmorViewer
 Library.ModeratorListInstance = MyModList
-Library.PlayerListInstance = MyPlayerList
 Library.WatermarkInstance = Watermark
 Library.TargetHudInstance = MyTargetHud
 
@@ -134,7 +132,7 @@ end)
   local CombatPage = Window:Page({Name = 'Combat'})
   local VisualsPage = Window:Page({Name = 'Visuals'})
   local MiscPage = Window:Page({Name = 'Misc'})
-  local SettingsPage = Library:CreateSettingsPage(Window, KeybindList, Watermark, MyModList, MyPlayerList, MyTargetHud)
+  local SettingsPage = Library:CreateSettingsPage(Window, KeybindList, Watermark, MyModList, MyTargetHud)
 
   local Debris, Players, Workspace, GuiService, RunService, UserInputService, ReplicatedStorage, Lighting, HttpService = game:GetService('Debris'), game:GetService('Players'), game:GetService('Workspace'), game:GetService('GuiService'), game:GetService('RunService'), game:GetService('UserInputService'), game:GetService('ReplicatedStorage'), game:GetService('Lighting'), game:GetService('HttpService')
   
