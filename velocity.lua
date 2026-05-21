@@ -146,8 +146,8 @@ Window.Skins = Window.Skins or {}
 local WeaponsSection = SkinsPage:Section({Name = "Weapon Skins"})
 
 WeaponsSection:Dropdown({
-    Name = "AK-47 Skin",
-    Options = {"Default", "Gold", "Ruby", "Void"},
+    Name = "AK47 Skin",
+    Options = {"Default", "Hyperwave", "Diablo", "BlueGem"},
     Default = "Default",
     Callback = function(selectedSkin)
         Window.Skins["AK47"] = (selectedSkin == "Default") and "" or selectedSkin
