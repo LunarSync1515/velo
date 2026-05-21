@@ -1777,34 +1777,6 @@ do
         return final
     end)
 
-    -- Force Layout Properties Function
-    local function EnforceVisualStyles()
-        local coreFrame = rawget(ArmorViewer, "Items") or ArmorViewer
-        if not coreFrame then return end
-        
-        -- Lock Text Alignment Formatting
-        if coreFrame["Title"] and coreFrame["Title"].Instance then
-            local label = coreFrame["Title"].Instance
-            label.TextXAlignment = Enum.TextXAlignment.Center
-        end
-        
-        -- Lock Background Plate Visual Display Stability
-        if coreFrame["TitleBox"] and coreFrame["TitleBox"].Instance then
-            local box = coreFrame["TitleBox"].Instance
-            box.BackgroundTransparency = 0.4
-            box.BackgroundColor3 = Color3.fromRGB(15, 18, 24)
-            box.Visible = true
-        end
-
-        -- Sync Alignment Calculations across multi-item layouts
-        if coreFrame["RealHolder"] and coreFrame["RealHolder"].Instance then
-            local layout = coreFrame["RealHolder"].Instance:FindFirstChildOfClass("UIGridLayout")
-            if layout then
-                layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-            end
-        end
-    end
-
     -- Main RenderStepped loop
     RunService.RenderStepped:Connect(function()
         local now = tick()
@@ -1841,21 +1813,17 @@ do
         if #armorData == 0 then
             ArmorViewer:ClearAllItems()
             ArmorViewer:SetTitle(`${character.Name} has no armor`)
-            EnforceVisualStyles()
             lastArmorHash = ''
             previousArmorImages = {}
             return
         end
 
         local armorHash = HttpService:JSONEncode(armorData)
-        if armorHash == lastArmorHash then 
-            EnforceVisualStyles()
-            return 
-        end
+        if armorHash == lastArmorHash then return end
         lastArmorHash = armorHash
 
         ArmorViewer:ClearAllItems()
-        ArmorViewer:SetTitle(`{character.Name}'s inventory`)
+        ArmorViewer:SetTitle(`${character.Name}'s inventory`)
 
         for _, armor in ipairs(armorData) do
             local key = armor.Name .. "_" .. (armor.Skin or 'Default')
@@ -1876,8 +1844,6 @@ do
                 previousArmorImages[key] = armorImageCache[key]
             end
         end
-
-        EnforceVisualStyles()
     end)
 end
   
