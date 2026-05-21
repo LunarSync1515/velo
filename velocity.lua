@@ -1733,10 +1733,9 @@ do
     local lastUpdateTime = 0
     local lastHideTime = 0
     local debounceTime = 0.15
-    local gracePeriod = 0.3 -- UI stays visible for 0.3s after losing target
+    local gracePeriod = 0.3
     local previousArmorImages = {}
 
-    -- Build GunTable once
     for _, gun in next, ItemsModule do
         if typeof(gun.Image) == 'table' then
             GunTable[gun.Name] = gun.Image
@@ -1748,7 +1747,6 @@ do
         end
     end
 
-    -- Safe armor extractor
     local GetArmor = LPH_NO_VIRTUALIZE(function(Character)
         local final = {}
         local names = {}
@@ -1780,16 +1778,17 @@ do
     end)
 
     -- Force Layout Properties Function
-    -- This guarantees formatting won't be stripped by theme engines
     local function EnforceVisualStyles()
         local coreFrame = rawget(ArmorViewer, "Items") or ArmorViewer
+        if not coreFrame then return end
         
-        -- Fix Title Alignment and Background Visibility
+        -- Lock Text Alignment Formatting
         if coreFrame["Title"] and coreFrame["Title"].Instance then
             local label = coreFrame["Title"].Instance
             label.TextXAlignment = Enum.TextXAlignment.Center
         end
         
+        -- Lock Background Plate Visual Display Stability
         if coreFrame["TitleBox"] and coreFrame["TitleBox"].Instance then
             local box = coreFrame["TitleBox"].Instance
             box.BackgroundTransparency = 0.4
@@ -1797,9 +1796,9 @@ do
             box.Visible = true
         end
 
-        -- Fix Center Alignment Constraints for single/double item spacing
+        -- Sync Alignment Calculations across multi-item layouts
         if coreFrame["RealHolder"] and coreFrame["RealHolder"].Instance then
-            local layout = coreFrame["RealHolder"].Instance:FindFirstChildOfClass("UIListLayout")
+            local layout = coreFrame["RealHolder"].Instance:FindFirstChildOfClass("UIGridLayout")
             if layout then
                 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
             end
@@ -1814,7 +1813,6 @@ do
 
         local character = Targeting.TargetCharacter
 
-        -- No target or ignore soldiers
         if not character or character.Name:lower():find("soldier") then
             lastHideTime = lastHideTime == 0 and now or lastHideTime
             if now - lastHideTime > gracePeriod then
@@ -1826,10 +1824,9 @@ do
             return
         else
             ArmorViewer:SetVisibility(flags.ArmorBarEnabled)
-            lastHideTime = 0 -- reset grace timer
+            lastHideTime = 0
         end
 
-        -- Reset if target switched
         if character ~= lastTarget then
             lastTarget = character
             lastArmorHash = ''
@@ -1841,20 +1838,18 @@ do
 
         local armorData = GetArmor(character)
 
-        -- Always update title
         if #armorData == 0 then
             ArmorViewer:ClearAllItems()
             ArmorViewer:SetTitle(`${character.Name} has no armor`)
-            EnforceVisualStyles() -- Enforce background fixes
+            EnforceVisualStyles()
             lastArmorHash = ''
             previousArmorImages = {}
             return
         end
 
-        -- Encode armor for change detection
         local armorHash = HttpService:JSONEncode(armorData)
         if armorHash == lastArmorHash then 
-            EnforceVisualStyles() -- Keep alignment active
+            EnforceVisualStyles()
             return 
         end
         lastArmorHash = armorHash
@@ -1876,14 +1871,12 @@ do
                 end
             end
 
-            -- Only add if changed
             if previousArmorImages[key] ~= armorImageCache[key] then
                 ArmorViewer:Add(armor.Name, armorImageCache[key])
                 previousArmorImages[key] = armorImageCache[key]
             end
         end
 
-        -- Final run visual styling catch
         EnforceVisualStyles()
     end)
 end
